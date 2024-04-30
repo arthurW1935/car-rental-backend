@@ -16,6 +16,8 @@ import jakarta.persistence.Entity;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+
+
 public class Customer
 {
     @Id
