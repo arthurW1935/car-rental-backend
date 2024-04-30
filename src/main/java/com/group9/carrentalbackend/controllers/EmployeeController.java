@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/employee")
+@RequestMapping("employees")
 public class EmployeeController {
 
     @GetMapping("/{id}")
@@ -15,22 +15,22 @@ public class EmployeeController {
         return null;
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<List<Employee>> getAllEmployees(){
+    @GetMapping("")
+    public ResponseEntity<List<Employee>> getEmployees(){
         return null;
     }
 
-    @PostMapping("/add")
+    @PostMapping("")
     public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee){
         return null;
     }
 
-    @PutMapping("/update")
+    @PutMapping("")
     public ResponseEntity<Employee> updateEmployee(@RequestBody Employee employee){
         return null;
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("{id}")
     public ResponseEntity<Employee> deleteEmployee(@PathVariable Long id){
         return null;
     }
