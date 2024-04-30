@@ -22,5 +22,5 @@ public class Rental {
     private Customer customer;
     private Date StartDate;
     private Date EndDate;
-    private Long TotalCost;
+    private Double TotalCost;
 }
