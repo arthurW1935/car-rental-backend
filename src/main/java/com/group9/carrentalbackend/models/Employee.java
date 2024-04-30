@@ -2,10 +2,7 @@ package com.group9.carrentalbackend.models;
 
 import java.util.Date;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,4 +21,6 @@ public class Employee {
     private String phoneNumber;
     private String email;
     private Date joiningDate;
+    @ManyToOne
+    private Branch branch;
 }

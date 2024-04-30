@@ -34,4 +34,9 @@ public class EmployeeController {
     public ResponseEntity<Employee> deleteEmployee(@PathVariable Long id){
         return null;
     }
+
+    @GetMapping("/{branchId}")
+    public ResponseEntity<List<Employee>> getEmployeesByBranch(@PathVariable Long branchId){
+        return null;
+    }
 }
