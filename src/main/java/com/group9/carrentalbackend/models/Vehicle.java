@@ -27,5 +27,4 @@ public class Vehicle {
     private Branch branch;
     private enum type;
     private enum Status;
-
 }
