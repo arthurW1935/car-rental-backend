@@ -1,12 +1,9 @@
 package com.group9.carrentalbackend.models;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Setter;
 
 
 @Getter
@@ -22,5 +19,5 @@ public class Branch {
     @OneToOne
     private Employee manager;
     private String phoneNumber;
-    private String email;
+    private String email;
 }
