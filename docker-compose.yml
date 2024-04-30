@@ -10,7 +10,7 @@ services:
       MYSQL_USER: group9
       MYSQL_PASSWORD: group9
     ports:
-      - "3306:3306"
+      - "5050:3306"
     volumes:
       - mysql_data:/var/lib/mysql
 
