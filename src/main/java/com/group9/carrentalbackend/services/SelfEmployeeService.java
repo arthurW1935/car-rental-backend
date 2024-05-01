@@ -32,7 +32,7 @@ public class SelfEmployeeService implements EmployeeService{
     public EmployeeDto getEmployeeById(Long id) throws InvalidArgumentException {
         Optional<Employee> employee = employeeRepository.findById(id);
         if (employee.isEmpty()) {
-            throw new InvalidArgumentException(id, "Employee not found");
+            throw new EmployeeNotFoundException(id, "Employee not found");
         }
         Employee thisEmployee = employee.get();
         Long branchId = -1L;
@@ -53,9 +53,9 @@ public class SelfEmployeeService implements EmployeeService{
     }
 
     @Override
-    public EmployeeDto createEmployee(Employee employee) throws InvalidArgumentException {
+    public EmployeeDto createEmployee(Employee employee) {
         if(employee.getId()!=null){
-            throw new InvalidArgumentException(employee.getId(), "Employee id should be null");
+            throw new InvalidArgumentException("Employee id should be null");
         }
         Employee thisEmployee = employeeRepository.save(employee);
 
