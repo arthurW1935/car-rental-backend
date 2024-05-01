@@ -25,11 +25,10 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
     @Override
     void deleteById(Long id);
 
-    List<Rental> findAllByStartDateAfterAndVehicle(Date date, Vehicle vehicle);
-
+    List<Rental> findAllByStartDateAfterAndVehicle(Date startDate, Vehicle vehicle);
     List<Rental> findAllByStartDateAfterAndCustomer(Date date, Customer customer);
 
-    List<Rental> findAllByStartDateBeforeAndEndDateAfter(Date startDate, Date endDate);
+    List<Rental> findAllByStartDateLessThanEqualAndEndDateGreaterThanEqual(Date onDate, Date onDateSame);
 
     List<Rental> findByCustomerId(Long id);
 

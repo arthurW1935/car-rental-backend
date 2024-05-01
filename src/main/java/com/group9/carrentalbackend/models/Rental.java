@@ -20,7 +20,7 @@ public class Rental {
     private Vehicle vehicle;
     @ManyToOne
     private Customer customer;
-    private Date StartDate;
-    private Date EndDate;
+    private Date startDate;
+    private Date endDate;
     private Double TotalCost;
 }
