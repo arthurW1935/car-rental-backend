@@ -1,7 +1,7 @@
 package com.group9.carrentalbackend.exceptions;
 
 public class EmployeeNotFoundException extends RuntimeException {
-    public EmployeeNotFoundException(String message) {
+    public EmployeeNotFoundException(Long id, String message) {
         super(message);
     }
 }

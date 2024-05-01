@@ -1,5 +1,6 @@
 package com.group9.carrentalbackend.exceptions;
 
+<<<<<<< HEAD
 import lombok.Getter;
 import lombok.Setter;
 

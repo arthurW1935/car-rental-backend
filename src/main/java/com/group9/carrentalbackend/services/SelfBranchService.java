@@ -1,5 +1,7 @@
 package com.group9.carrentalbackend.services;
 
+import com.group9.carrentalbackend.exceptions.BranchNotFoundException;
+import com.group9.carrentalbackend.exceptions.EmployeeNotFoundException;
 import com.group9.carrentalbackend.models.Branch;
 import com.group9.carrentalbackend.models.Employee;
 import org.springframework.stereotype.Service;
@@ -31,7 +33,7 @@ public class SelfBranchService implements BranchService {
     }
 
     @Override
-    public Branch updateBranch(Branch branch) {
+    public Branch updateBranch(Branch branch) throws EmployeeNotFoundException {
         Optional<Branch> existingBranch = branchRepository.findById(branch.getId());
 
         if(existingBranch.isEmpty()){
@@ -55,7 +57,7 @@ public class SelfBranchService implements BranchService {
     }
 
     @Override
-    public Branch deleteBranch(Long id) {
+    public Branch deleteBranch(Long id) throws BranchNotFoundException {
         Optional<Branch> existingBranch = branchRepository.findById(id);
 
         if(existingBranch.isEmpty()){
