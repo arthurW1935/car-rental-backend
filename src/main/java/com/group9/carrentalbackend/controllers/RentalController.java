@@ -22,7 +22,7 @@ public class RentalController {
         return null;
     }
 
-    @GetMapping("/history/vehicle/{id}")
+    @GetMapping("/history/customer/{id}")
     public List<Rental> getRentalHistoryByCustomerId(Long id){
         return null;
     }
