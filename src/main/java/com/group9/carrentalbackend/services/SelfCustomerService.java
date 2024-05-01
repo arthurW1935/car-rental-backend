@@ -25,7 +25,7 @@ public class SelfCustomerService implements CustomerService{
     public Customer getCustomerById(Long id) throws CustomerNotFoundException {
         Optional<Customer> customer = customerRepository.findById(id);
         if(customer.isEmpty()){
-            throw new CustomerNotFoundException(id);
+            throw new CustomerNotFoundException(id, "Customer not found");
         }
 
         return customer.get();
@@ -51,7 +51,7 @@ public class SelfCustomerService implements CustomerService{
     public Customer updateCustomer(Customer customer) {
         Optional<Customer> existingCustomer = customerRepository.findById(customer.getId());
         if(existingCustomer.isEmpty()) {
-           throw new CustomerNotFoundException(customer.getId());
+           throw new CustomerNotFoundException(customer.getId(), "Customer not found");
         }
         return customerRepository.save(customer);
     }
@@ -60,7 +60,7 @@ public class SelfCustomerService implements CustomerService{
     public Customer deleteCustomer(Long id) {
         Optional<Customer> existingCustomer = customerRepository.findById(id);
         if(existingCustomer.isEmpty()) {
-                 throw new CustomerNotFoundException(id);
+                 throw new CustomerNotFoundException(id, "Customer not found");
         }
 
         customerRepository.deleteById(id);
@@ -72,7 +72,7 @@ public class SelfCustomerService implements CustomerService{
     public List<Rental> getCustomerHistory(Long id) {
 //        Optional<Customer> existingCustomer = customerRepository.findById(id);
 //        if(existingCustomer.isEmpty()) {
-//            throw new CustomerNotFoundException(id);
+//            throw new CustomerNotFoundException(id, "Customer not found");
 //        }
 //
 //      return rentalRepository.fidbyCustomer(id);

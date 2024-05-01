@@ -30,4 +30,8 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
     List<Rental> findAllByStartDateAfterAndCustomer(Date date, Customer customer);
 
     List<Rental> findAllByStartDateBeforeAndEndDateAfter(Date startDate, Date endDate);
+
+    List<Rental> findByCustomerId(Long id);
+
+    List<Rental> findByVehicleId(Long id);
 }
