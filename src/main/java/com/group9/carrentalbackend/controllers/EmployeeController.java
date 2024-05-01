@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("employee")
-public class EmployeeController {
-
+public class EmployeeController
+{
     private final EmployeeService employeeService;
     EmployeeController(EmployeeService employeeService){
         this.employeeService = employeeService;

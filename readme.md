@@ -12,15 +12,13 @@ In this project we have developed a comprehensive system for managing car rental
 * [@garvit420](https://github.com/garvit420)
 
 ## Installation
+* Clone the repository to your local machine using the command ` git clone https://github.com/arthurW1935/car-rental-backend.git `.
 * We recommend installing an IDE for this project. We used [IntelliJ](https://www.jetbrains.com/idea/).
 * Install [Docker](https://www.docker.com/products/docker-desktop/) and set it up as per your operating system.
 * Docker Installation Guide [Windows](https://youtu.be/WDEdRmTCSs8), [Linux](https://youtu.be/5_EA3rBCXmU), [Mac](https://youtu.be/-EXlfSsP49A).
 * After installing Docker, ensure it is running. Then, navigate to your project directory and run the command `docker compose up` in the terminal. If you encounter any errors, check the `docker-compose.yml` file in the project directory for conflicting port usage.
 * We recommend installing [Postman](https://www.postman.com/downloads/) for testing api calls.
 * Now, finally run the `CarRentalBackendApplication` present in your project directory to start the project.
-
-## Contribution
-* In case you want to contribute, please check out `contribution.md`.
 
 ## Documentation
 ### Models Involved
@@ -130,3 +128,516 @@ IntelliJ IDEA
 * /vehicles/type (GET): Retrieve vehicles by type.
 * /vehicles/branch/{id} (GET): Retrieve vehicles by branch.
 * /vehicles/status (GET): Retrieve vehicles by status.
+
+### Some examples for the sample input and output of the API endpoints are as follows:
+
+
+
+
+
+1. /branch/{id} (GET)
+
+   Input: An ID of an existing branch, for example `1`.
+
+   Output: A `BranchDto` object with the details of the branch with the given ID. For example:
+   ```json
+   {
+       "id": 1,
+       "location": "New York",
+       "managerId": 1,
+       "phoneNumber": "1234567890",
+       "email": "branch.newyork@example.com"
+   }
+   ```
+
+2. /branch (GET)
+
+   Input: No input is required.
+
+   Output: A list of `BranchDto` objects with the details of all branches. For example:
+   ```json
+   [
+       {
+           "id": 1,
+           "location": "New York",
+           "managerId": 1,
+           "phoneNumber": "1234567890",
+           "email": "branch.newyork@example.com"
+       },
+       {
+           "id": 2,
+           "location": "Los Angeles",
+           "managerId": 2,
+           "phoneNumber": "0987654321",
+           "email": "branch.losangeles@example.com"
+       }
+   ]
+   ```
+
+3. /employee (POST)
+
+   Input: A `Branch` object without an ID. For example:
+   ```json
+   {
+       "location": "New York",
+       "managerId": 1,
+       "phoneNumber": "1234567890",
+       "email": "branch.newyork@example.com"
+   }
+   ```
+
+   Output: A `BranchDto` object with the details of the created branch, including the generated ID. For example:
+   ```json
+   {
+       "id": 1,
+       "location": "New York",
+       "managerId": 1,
+       "phoneNumber": "1234567890",
+       "email": "branch.newyork@example.com"
+   }
+   ```
+
+4. /branch (PUT)
+
+   Input: A `Branch` object with an ID. For example:
+   ```json
+   {
+       "id": 1,
+       "location": "New York",
+       "managerId": 1,
+       "phoneNumber": "1234567890",
+       "email": "branch.newyork@example.com"
+   }
+   ```
+
+   Output: A `BranchDto` object with the details of the updated branch. For example:
+   ```json
+   {
+       "id": 1,
+       "location": "New York",
+       "managerId": 1,
+       "phoneNumber": "1234567890",
+       "email": "branch.newyork@example.com"
+   }
+   ```
+
+5. /branch/{id} (DELETE)
+
+   Input: An ID of an existing branch, for example `1`.
+
+   Output: A `BranchDto` object with the details of the deleted branch. For example:
+   ```json
+   {
+       "id": 1,
+       "location": "New York",
+       "managerId": 1,
+       "phoneNumber": "1234567890",
+       "email": "branch.newyork@example.com"
+   }
+   ```
+
+1. /employee/{id} (GET)
+
+   Input: An ID of an existing employee, for example `1`.
+
+   Output: An `EmployeeDto` object with the details of the employee with the given ID. For example:
+   ```json
+   {
+       "id": 1,
+       "name": "John Doe",
+       "phoneNumber": "1234567890",
+       "email": "john.doe@example.com",
+       "joiningDate": "2022-01-01",
+       "branchId": 1
+   }
+   ```
+
+2. /employee (GET)
+
+   Input: No input is required.
+
+   Output: A list of `EmployeeDto` objects with the details of all employees. For example:
+   ```json
+   [
+       {
+           "id": 1,
+           "name": "John Doe",
+           "phoneNumber": "1234567890",
+           "email": "john.doe@example.com",
+           "joiningDate": "2022-01-01",
+           "branchId": 1
+       },
+       {
+           "id": 2,
+           "name": "Jane Doe",
+           "phoneNumber": "0987654321",
+           "email": "jane.doe@example.com",
+           "joiningDate": "2022-02-01",
+           "branchId": 2
+       }
+   ]
+   ```
+
+3. /employee (POST)
+
+   Input: An `Employee` object without an ID. For example:
+   ```json
+   {
+       "name": "John Doe",
+       "phoneNumber": "1234567890",
+       "email": "john.doe@example.com",
+       "joiningDate": "2022-01-01",
+       "branch": {
+           "id": 1
+       }
+   }
+   ```
+
+   Output: An `EmployeeDto` object with the details of the created employee, including the generated ID. For example:
+   ```json
+   {
+       "id": 1,
+       "name": "John Doe",
+       "phoneNumber": "1234567890",
+       "email": "john.doe@example.com",
+       "joiningDate": "2022-01-01",
+       "branchId": 1
+   }
+   ```
+
+4. /employee (PUT)
+
+   Input: An `Employee` object with an ID. For example:
+   ```json
+   {
+       "id": 1,
+       "name": "John Doe",
+       "phoneNumber": "1234567890",
+       "email": "john.doe@example.com",
+       "joiningDate": "2022-01-01",
+       "branch": {
+           "id": 1
+       }
+   }
+   ```
+
+   Output: An `EmployeeDto` object with the details of the updated employee. For example:
+   ```json
+   {
+       "id": 1,
+       "name": "John Doe",
+       "phoneNumber": "1234567890",
+       "email": "john.doe@example.com",
+       "joiningDate": "2022-01-01",
+       "branchId": 1
+   }
+   ```
+
+5. /employee/{id} (DELETE)
+
+   Input: An ID of an existing employee, for example `1`.
+
+   Output: An `EmployeeDto` object with the details of the deleted employee. For example:
+   ```json
+   {
+       "id": 1,
+       "name": "John Doe",
+       "phoneNumber": "1234567890",
+       "email": "john.doe@example.com",
+       "joiningDate": "2022-01-01",
+       "branchId": 1
+   }
+   ```
+
+6. `getEmployeesByBranch(Long branchId)`
+
+   Input: An ID of an existing branch, for example `1`.
+
+   Output: A list of `EmployeeDto` objects with the details of all employees in the given branch. For example:
+   ```json
+   [
+       {
+           "id": 1,
+           "name": "John Doe",
+           "phoneNumber": "1234567890",
+           "email": "john.doe@example.com",
+           "joiningDate": "2022-01-01",
+           "branchId": 1
+       },
+       {
+           "id": 2,
+           "name": "Jane Doe",
+           "phoneNumber": "0987654321",
+           "email": "jane.doe@example.com",
+           "joiningDate": "2022-02-01",
+           "branchId": 1
+       }
+   ]
+   ```
+
+1. /rental (POST)
+
+   Input: A `RentalDto` object without an ID. For example:
+   ```json
+   {
+       "customerId": 1,
+       "vehicleId": 1,
+       "startDate": "2022-01-01",
+       "endDate": "2022-01-10"
+   }
+   ```
+
+   Output: A `Rental` object with the details of the created rental, including the generated ID. For example:
+   ```json
+   {
+       "id": 1,
+       "customerId": 1,
+       "vehicleId": 1,
+       "startDate": "2022-01-01",
+       "endDate": "2022-01-10"
+   }
+   ```
+
+2. /rental/{id} (GET)
+
+   Input: An ID of an existing rental, for example `1`.
+
+   Output: A `Rental` object with the details of the rental with the given ID. For example:
+   ```json
+   {
+       "id": 1,
+       "customerId": 1,
+       "vehicleId": 1,
+       "startDate": "2022-01-01",
+       "endDate": "2022-01-10"
+   }
+   ```
+
+3. /rental (GET)
+
+   Input: No input is required.
+
+   Output: A list of `Rental` objects with the details of all ongoing rentals.
+
+4. /rental/history/customer/{id} (GET)
+
+   Input: An ID of an existing customer, for example `1`.
+
+   Output: A list of `Rental` objects with the details of all rentals by the given customer.
+
+5. /rental/history/vehicle/{id} (GET)
+
+   Input: An ID of an existing vehicle, for example `1`.
+
+   Output: A list of `Rental` objects with the details of all rentals of the given vehicle.
+
+6. /rental/reservation/vehicle/{id} (GET)
+
+   Input: An ID of an existing vehicle, for example `1`.
+
+   Output: A list of `Rental` objects with the details of all reservations of the given vehicle.
+
+7. /rental/reservation/customer/{id} (GET)
+
+   Input: An ID of an existing customer, for example `1`.
+
+   Output: A list of `Rental` objects with the details of all reservations by the given customer.
+
+8. /rental/cost (GET)
+
+   Input: A `CostDto` object with the details of the rental for which the cost is to be calculated. For example:
+   ```json
+   {
+       "vehicleId": 1,
+       "startDate": "2022-01-01",
+       "endDate": "2022-01-10"
+   }
+   ```
+
+   Output: The cost of the rental as a `Double`.
+
+9. /rental/{id} (DELETE)
+
+   Input: An ID of an existing rental, for example `1`.
+
+   Output: A `Rental` object with the details of the cancelled rental.
+
+
+1. /vehicles/{id}
+
+   Input: An ID of an existing vehicle, for example `1`.
+
+   Output: A `VehicleDto` object with the details of the vehicle with the given ID. For example:
+   ```json
+   {
+       "id": 1,
+       "manufacturer": "Toyota",
+       "model": "Camry",
+       "registrationYear": "2018",
+       "numberPlate": "ABC-123",
+       "mileage": 50000,
+       "branchId": 1,
+       "vehicleTypeId": 1,
+       "vehicleStatusId": 1
+   }
+   ```
+
+2. /vehicles (GET)
+
+   Input: No input is required.
+
+   Output: A list of `VehicleDto` objects with the details of all vehicles. For example:
+   ```json
+   [
+       {
+           "id": 1,
+           "manufacturer": "Toyota",
+           "model": "Camry",
+           "registrationYear": "2018",
+           "numberPlate": "ABC-123",
+           "mileage": 50000,
+           "branchId": 1,
+           "vehicleTypeId": 1,
+           "vehicleStatusId": 1
+       },
+       {
+           "id": 2,
+           "manufacturer": "Honda",
+           "model": "Civic",
+           "registrationYear": "2019",
+           "numberPlate": "XYZ-456",
+           "mileage": 40000,
+           "branchId": 2,
+           "vehicleTypeId": 1,
+           "vehicleStatusId": 1
+       }
+   ]
+   ```
+
+3. /vehicles (POST)
+
+   Input: A `Vehicle` object without an ID. For example:
+   ```json
+   {
+       "manufacturer": "Toyota",
+       "model": "Camry",
+       "registrationYear": "2018",
+       "numberPlate": "ABC-123",
+       "mileage": 50000,
+       "branch": {
+           "id": 1
+       },
+       "vehicleType": {
+           "id": 1
+       },
+       "vehicleStatus": {
+           "id": 1
+       }
+   }
+   ```
+
+   Output: A `VehicleDto` object with the details of the created vehicle, including the generated ID. For example:
+   ```json
+   {
+       "id": 1,
+       "manufacturer": "Toyota",
+       "model": "Camry",
+       "registrationYear": "2018",
+       "numberPlate": "ABC-123",
+       "mileage": 50000,
+       "branchId": 1,
+       "vehicleTypeId": 1,
+       "vehicleStatusId": 1
+   }
+   ```
+
+4. /vehicles/{id} (PUT)
+
+   Input: A `Vehicle` object with an ID. For example:
+   ```json
+   {
+       "id": 1,
+       "manufacturer": "Toyota",
+       "model": "Camry",
+       "registrationYear": "2018",
+       "numberPlate": "ABC-123",
+       "mileage": 50000,
+       "branch": {
+           "id": 1
+       },
+       "vehicleType": {
+           "id": 1
+       },
+       "vehicleStatus": {
+           "id": 1
+       }
+   }
+   ```
+
+   Output: A `VehicleDto` object with the details of the updated vehicle. For example:
+   ```json
+   {
+       "id": 1,
+       "manufacturer": "Toyota",
+       "model": "Camry",
+       "registrationYear": "2018",
+       "numberPlate": "ABC-123",
+       "mileage": 50000,
+       "branchId": 1,
+       "vehicleTypeId": 1,
+       "vehicleStatusId": 1
+   }
+   ```
+
+5. /vehicles/{id} (DELETE)
+
+   Input: An ID of an existing vehicle, for example `1`.
+
+   Output: A `VehicleDto` object with the details of the deleted vehicle. For example:
+   ```json
+   {
+       "id": 1,
+       "manufacturer": "Toyota",
+       "model": "Camry",
+       "registrationYear": "2018",
+       "numberPlate": "ABC-123",
+       "mileage": 50000,
+       "branchId": 1,
+       "vehicleTypeId": 1,
+       "vehicleStatusId": 1
+   }
+   ```
+
+6. /vehicles/type (GET)
+
+   Input: An ID of an existing branch, for example `1`.
+
+   Output: A list of `VehicleDto` objects with the details of all vehicles in the given branch. For example:
+   ```json
+   [
+       {
+           "id": 1,
+           "manufacturer": "Toyota",
+           "model": "Camry",
+           "registrationYear": "2018",
+           "numberPlate": "ABC-123",
+           "mileage": 50000,
+           "branchId": 1,
+           "vehicleTypeId": 1,
+           "vehicleStatusId": 1
+       },
+       {
+           "id": 2,
+           "manufacturer": "Honda",
+           "model": "Civic",
+           "registrationYear": "2019",
+           "numberPlate": "XYZ-456",
+           "mileage": 40000,
+           "branchId": 1,
+           "vehicleTypeId": 1,
+           "vehicleStatusId": 1
+       }
+   ]
+   ```
+
+
