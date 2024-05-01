@@ -93,7 +93,7 @@ public class SelfVehicleService implements VehicleService{
             throw new VehicleNotFoundException(id,"Vehicle not found");
         }
         vehicleRepository.deleteById(id);
-        return new VehicleDto(vehicleRepository.findById(id).get().getId(), vehicleRepository.findById(id).get().getManufacturer(), vehicleRepository.findById(id).get().getModel(), vehicleRepository.findById(id).get().getYear(), vehicleRepository.findById(id).get().getLicensePlateNumber(), vehicleRepository.findById(id).get().getCurrentMileage(), vehicleRepository.findById(id).get().getVehicleType(), vehicleRepository.findById(id).get().getVehicleStatus(), vehicleRepository.findById(id).get().getBranch().getId());
+        return new VehicleDto(optionalVehicle.get().getId(), optionalVehicle.get().getManufacturer(), optionalVehicle.get().getModel(), optionalVehicle.get().getYear(), optionalVehicle.get().getLicensePlateNumber(), optionalVehicle.get().getCurrentMileage(), optionalVehicle.get().getVehicleType(), optionalVehicle.get().getVehicleStatus(), optionalVehicle.get().getBranch().getId());
     }
 
     @Override
@@ -105,7 +105,7 @@ public class SelfVehicleService implements VehicleService{
             for(Vehicle vehicle: vehicleList){
                 vehicleDtoList.add(new VehicleDto(vehicle.getId(), vehicle.getManufacturer(), vehicle.getModel(), vehicle.getYear(), vehicle.getLicensePlateNumber(), vehicle.getCurrentMileage(), vehicle.getVehicleType(), vehicle.getVehicleStatus(), vehicle.getBranch().getId()));
             }
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             throw new InvalidVehicleTypeException(type, "Invalid vehicle type");
         }
         return vehicleDtoList;

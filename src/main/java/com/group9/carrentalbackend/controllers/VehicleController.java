@@ -31,7 +31,7 @@ public class VehicleController {
         return vehicleService.createVehicle(vehicle);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("")
     public VehicleDto updateVehicleById(@RequestBody Vehicle vehicle) {
         return vehicleService.updateVehicleById(vehicle);
     }
