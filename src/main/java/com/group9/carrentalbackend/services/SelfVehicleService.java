@@ -5,6 +5,7 @@ import com.group9.carrentalbackend.exceptions.InvalidVehicleTypeException;
 import com.group9.carrentalbackend.exceptions.VehicleNotFoundException;
 import com.group9.carrentalbackend.models.Branch;
 import com.group9.carrentalbackend.models.Vehicle;
+import com.group9.carrentalbackend.models.VehicleStatus;
 import com.group9.carrentalbackend.models.VehicleType;
 import com.group9.carrentalbackend.repositories.BranchRepository;
 import com.group9.carrentalbackend.repositories.VehicleRepository;
@@ -78,7 +79,7 @@ public class SelfVehicleService implements VehicleService{
     public List<Vehicle> getVehiclesByType(String type) {
         try {
             VehicleType vehicleType = VehicleType.valueOf(type.toUpperCase());
-            return vehicleRepository.findAllByType(vehicleType);
+            return vehicleRepository.findAllByVehicleType(vehicleType);
         } catch (IllegalArgumentException e) {
             throw new InvalidVehicleTypeException(type, "Invalid vehicle type");
         }
@@ -86,21 +87,20 @@ public class SelfVehicleService implements VehicleService{
 
     @Override
     public List<Vehicle> getVehiclesByBranch(Long branchId) {
-//        Optional<Branch> optionalBranch = branchRepository.findById(branchId);
-//        if(optionalBranch.isEmpty()){
-//            throw new BranchNotFoundException(branchId,"Branch not found");
-//        }
-//        return vehicleRepository.findByBranch(optionalBranch.get());
-        return null;
+        Optional<Branch> optionalBranch = branchRepository.findById(branchId);
+        if(optionalBranch.isEmpty()){
+            throw new BranchNotFoundException(branchId,"Branch not found");
+        }
+        return vehicleRepository.findAllByBranchId(branchId);
     }
 
     @Override
     public List<Vehicle> getVehiclesByStatus(String status) {
         try {
-            VehicleType vehicleType = VehicleType.valueOf(status.toUpperCase());
-            return vehicleRepository.findAllByType(vehicleType);
+            VehicleStatus vehicleStatus = VehicleStatus.valueOf(status.toUpperCase());
+            return vehicleRepository.findAllByVehicleStatus(vehicleStatus);
         } catch (IllegalArgumentException e) {
-            throw new InvalidVehicleTypeException(status, "Invalid vehicle type");
+            throw new InvalidVehicleTypeException(status, "Invalid Vehicle Status");
         }
     }
 

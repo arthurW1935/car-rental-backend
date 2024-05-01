@@ -11,8 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-@Service("SelfCustomerService")
-
+@Service
 public class SelfCustomerService implements CustomerService{
    private final CustomerRepository customerRepository;
    private final RentalRepository rentalRepository;

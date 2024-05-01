@@ -17,7 +17,7 @@ class CustomerController {
         this.customerService = customerService;
     }
     @GetMapping("/{id}")
-    public Customer getCustomerbyId(@PathVariable Long id) {
+    public Customer getCustomerById(@PathVariable Long id) {
         return customerService.getCustomerById(id);
     }
     @GetMapping

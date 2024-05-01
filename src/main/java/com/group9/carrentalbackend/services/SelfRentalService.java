@@ -13,6 +13,7 @@ import com.group9.carrentalbackend.models.Vehicle;
 import com.group9.carrentalbackend.repositories.CustomerRepository;
 import com.group9.carrentalbackend.repositories.RentalRepository;
 import com.group9.carrentalbackend.repositories.VehicleRepository;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -22,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class SelfRentalService implements RentalService{
     CustomerRepository customerRepository;
     RentalRepository rentalRepository;
@@ -84,7 +86,7 @@ public class SelfRentalService implements RentalService{
     public List<Rental> getAllOngoingRental() {
         Calendar calendar = Calendar.getInstance();
         Date today = calendar.getTime();
-        List<Rental> ans = rentalRepository.findAllByStartDateBeforeAndEndDateAfter(today,today);
+        List<Rental> ans = rentalRepository.findAllByStartDateLessThanEqualAndEndDateGreaterThanEqual(today,today);
         return ans;
     }
 
