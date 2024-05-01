@@ -1,6 +1,6 @@
 package com.group9.carrentalbackend.exceptions;
 
-public class EmployeeAlreadyExistsException {
+public class EmployeeAlreadyExistsException extends Exception {
     public EmployeeAlreadyExistsException(String message) {
         super(message);
     }
