@@ -1,6 +1,5 @@
 package com.group9.carrentalbackend.services;
 
-import com.group9.carrentalbackend.exceptions.CustomerAlreadyExistsException;
 import com.group9.carrentalbackend.exceptions.CustomerNotFoundException;
 import com.group9.carrentalbackend.models.Customer;
 import com.group9.carrentalbackend.models.Rental;
@@ -8,8 +7,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @Service("SelfCustomerService")
 
@@ -39,11 +36,8 @@ public class SelfCustomerService implements CustomerService{
 
 
     @Override
-    public Customer addCustomer(Customer customer) throws CustomerAlreadyExistsException{
-        Optional<Customer> existingCustomer = customerRepository.findById(customer.getId());
-        if(existingCustomer.isPresent()) {
-            throw new CustomerAlreadyExistsException(customer);
-        }
+    public Customer addCustomer(Customer customer){
+
         return customerRepository.save(customer);
     }
 

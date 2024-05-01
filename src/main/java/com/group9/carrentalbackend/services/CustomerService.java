@@ -1,6 +1,5 @@
 package com.group9.carrentalbackend.services;
 
-import com.group9.carrentalbackend.exceptions.CustomerAlreadyExistsException;
 import com.group9.carrentalbackend.exceptions.CustomerNotFoundException;
 import com.group9.carrentalbackend.models.Customer;
 import com.group9.carrentalbackend.models.Rental;
@@ -12,7 +11,7 @@ public interface CustomerService {
 
     List<Customer> getAllCustomers();
 
-    Customer addCustomer(Customer customer) throws CustomerAlreadyExistsException;
+    Customer addCustomer(Customer customer) ;
 
     Customer updateCustomer(Customer customer) throws CustomerNotFoundException;
 
