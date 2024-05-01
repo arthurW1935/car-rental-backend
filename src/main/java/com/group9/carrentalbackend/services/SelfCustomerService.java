@@ -1,5 +1,7 @@
 package com.group9.carrentalbackend.services;
 
+import com.group9.carrentalbackend.exceptions.CustomerAlreadyExistsException;
+import com.group9.carrentalbackend.exceptions.CustomerNotFoundException;
 import com.group9.carrentalbackend.models.Customer;
 import com.group9.carrentalbackend.models.Rental;
 import org.springframework.stereotype.Service;
@@ -10,6 +12,7 @@ import java.util.Optional;
 import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @Service("SelfCustomerService")
+
 public class SelfCustomerService implements CustomerService{
    private final CustomerRepository customerRepository;
    private final RentalRepository rentalRepository;
@@ -19,10 +22,10 @@ public class SelfCustomerService implements CustomerService{
    }
 
     @Override
-    public Customer getCustomerById(Long id) {
+    public Customer getCustomerById(Long id) throws CustomerNotFoundException {
         Optional<Customer> customer = customerRepository.findById(id);
         if(customer.isEmpty()){
-            return null;   // TODO: throw exception
+            throw new CustomerNotFoundException(id);
         }
 
         return customer.get();
@@ -30,29 +33,34 @@ public class SelfCustomerService implements CustomerService{
 
     @Override
     public List<Customer> getAllCustomers() {
+
         return customerRepository.findAll();
     }
 
 
     @Override
-    public Customer addCustomer(Customer customer) {
-        return customerRepository.save(customer);
-    }
-
-    @Override
-    public Customer updateCustomer(Customer customer) {
+    public Customer addCustomer(Customer customer) throws CustomerAlreadyExistsException{
         Optional<Customer> existingCustomer = customerRepository.findById(customer.getId());
-        if(existingCustomer.isEmpty()) {
-            return null;    // TODO: throw exception
+        if(existingCustomer.isPresent()) {
+            throw new CustomerAlreadyExistsException(customer);
         }
         return customerRepository.save(customer);
     }
 
     @Override
-    public Customer deleteCustomer(Long id) {
+    public Customer updateCustomer(Customer customer)  throws CustomerNotFoundException{
+        Optional<Customer> existingCustomer = customerRepository.findById(customer.getId());
+        if(existingCustomer.isEmpty()) {
+           throw new CustomerNotFoundException(customer.getId());
+        }
+        return customerRepository.save(customer);
+    }
+
+    @Override
+    public Customer deleteCustomer(Long id) throws CustomerNotFoundException{
         Optional<Customer> existingCustomer = customerRepository.findById(id);
         if(existingCustomer.isEmpty()) {
-                 return null;       // TODO: throw exception
+                 throw new CustomerNotFoundException(id);
         }
 
         customerRepository.deleteById(id);
@@ -61,10 +69,10 @@ public class SelfCustomerService implements CustomerService{
     }
 
     @Override
-    public List<Rental> getCustomerHistory(Long id) {
+    public List<Rental> getCustomerHistory(Long id)  throws CustomerNotFoundException{
         Optional<Customer> existingCustomer = customerRepository.findById(id);
         if(existingCustomer.isEmpty()) {
-            return null;       // TODO: throw exception
+            throw new CustomerNotFoundException(id);
         }
 
       return rentalRepository.findbyCustomer(id);
