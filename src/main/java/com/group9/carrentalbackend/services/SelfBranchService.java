@@ -3,6 +3,8 @@ package com.group9.carrentalbackend.services;
 import com.group9.carrentalbackend.exceptions.BranchNotFoundException;
 import com.group9.carrentalbackend.models.Branch;
 import com.group9.carrentalbackend.models.Employee;
+import com.group9.carrentalbackend.repositories.BranchRepository;
+import com.group9.carrentalbackend.repositories.EmployeeRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,8 +13,8 @@ import java.util.Optional;
 @Service
 public class SelfBranchService implements BranchService {
 
-    private final BranchRepository branchRepository = new BranchRepository();
-    private final EmployeeRepository employeeRepository = new EmployeeRepository();
+    private final BranchRepository branchRepository;
+    private final EmployeeRepository employeeRepository;
     public SelfBranchService(BranchRepository branchRepository, EmployeeRepository employeeRepository){
         this.branchRepository = branchRepository;
         this.employeeRepository = employeeRepository;
