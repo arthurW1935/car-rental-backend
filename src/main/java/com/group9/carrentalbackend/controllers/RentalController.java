@@ -13,8 +13,8 @@ public class RentalController {
     public Rental createRental(@RequestBody Rental rental) {
         return null;
     }
-    @GetMapping
-    public Rental getRentalById(Long id){
+    @GetMapping("/{id}")
+    public Rental getRentalById(@PathVariable Long id){
         return null;
     }
     @GetMapping("")
@@ -23,20 +23,27 @@ public class RentalController {
     }
 
     @GetMapping("/history/customer/{id}")
-    public List<Rental> getRentalHistoryByCustomerId(Long id){
+    public List<Rental> getRentalHistoryByCustomerId(@PathVariable Long id){
         return null;
     }
     @GetMapping("/history/vehicle/{id}")
-    public List<Rental> getRentalHistoryByVehicleId(){
+    public List<Rental> getRentalHistoryByVehicleId(@PathVariable Long id){
         return null;
     }
-
+    @GetMapping("/reservation/vehicle/{id}")
+    public List<Rental> getReservationByVehicleId(@PathVariable Long id){
+        return null;
+    }
+    @GetMapping("/reservation/customer/{id}")
+    public List<Rental> getReservationByCustomerId(@PathVariable Long id){
+        return null;
+    }
     @GetMapping("/cost")
     public Double getRentalCost(CostDto costDto){
         return null;
     }
     @DeleteMapping("/{id}")
-    public Rental cancelRentalbyId(@PathVariable Long id){
+    public Rental cancelRentalById(@PathVariable Long id){
         return null;
     }
 }
