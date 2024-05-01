@@ -1,6 +1,7 @@
 package com.group9.carrentalbackend.controllers;
 
 import com.group9.carrentalbackend.dtos.CostDto;
+import com.group9.carrentalbackend.dtos.RentalDto;
 import com.group9.carrentalbackend.models.Rental;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,7 +11,7 @@ import java.util.List;
 @RequestMapping("/rental")
 public class RentalController {
     @PostMapping("")
-    public Rental createRental(@RequestBody Rental rental) {
+    public Rental createRental(@RequestBody RentalDto rentalDto) {
         return null;
     }
     @GetMapping("/{id}")
