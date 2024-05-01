@@ -1,5 +1,5 @@
 package com.group9.carrentalbackend.models;
 
-public enum Status{
+public enum VehicleStatus {
     AVAILABLE, RENTED, MAINTENANCE
 }

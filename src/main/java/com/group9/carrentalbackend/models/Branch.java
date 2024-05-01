@@ -14,7 +14,7 @@ import lombok.Setter;
 public class Branch {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long branchId;
+    private Long id;
     private String location;
     @OneToOne
     private Employee manager;

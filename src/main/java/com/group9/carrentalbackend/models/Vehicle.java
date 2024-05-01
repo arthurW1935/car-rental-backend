@@ -22,6 +22,6 @@ public class Vehicle {
     private Double currentMileage;
     @ManyToOne
     private Branch branch;
-    private Type type;
-    private Status status;
+    private VehicleType vehicleType;
+    private VehicleStatus vehicleStatus;
 }
