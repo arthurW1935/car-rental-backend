@@ -2,9 +2,6 @@ package com.group9.carrentalbackend.controllers;
 
 import java.util.List;
 
-import org.springframework.web.bind.annotation.*;
-
-import com.group9.carrentalbackend.models.VehicleType;
 
 import com.group9.carrentalbackend.models.Vehicle;
 
@@ -33,12 +30,12 @@ public class VehicleController {
     }
 
     @DeleteMapping("/{id}")
-    public Vehicle removeVehicleById(@PathVariable Long id) {
-        return null;
+    public void removeVehicleById(@PathVariable Long id) {
+        return;
     }
 
     @GetMapping("/type")
-    public List<Vehicle> getVehiclesByType(@RequestParam String type) {
+    public List<Vehicle> getVehiclesByType(@RequestBody Type type) {
         return null;
     }
 

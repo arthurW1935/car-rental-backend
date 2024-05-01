@@ -1,12 +1,16 @@
 package com.group9.carrentalbackend.services;
 
+import com.group9.carrentalbackend.exceptions.BranchNotFoundException;
+import com.group9.carrentalbackend.exceptions.VehicleNotFoundException;
 import com.group9.carrentalbackend.models.Branch;
 import com.group9.carrentalbackend.models.Vehicle;
 import com.group9.carrentalbackend.models.VehicleType;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class SelfVehicleService implements VehicleService{
     private final VehicleRepository vehicleRepository;
     private final BranchRepository branchRepository;
