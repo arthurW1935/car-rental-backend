@@ -22,4 +22,5 @@ public interface BranchRepository extends JpaRepository<Branch, Long> {
 
     @Override
     void deleteById(Long id);
+
 }

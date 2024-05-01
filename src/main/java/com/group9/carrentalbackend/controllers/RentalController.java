@@ -18,7 +18,7 @@ public class RentalController {
     public Rental getRentalById(@PathVariable Long id){
         return null;
     }
-    @GetMapping("")
+    @GetMapping("/ongoing")
     public List<Rental> getAllOngoingRental() {
         return null;
     }
@@ -29,6 +29,7 @@ public class RentalController {
     }
     @GetMapping("/history/vehicle/{id}")
     public List<Rental> getRentalHistoryByVehicleId(@PathVariable Long id){
+
         return null;
     }
     @GetMapping("/reservation/vehicle/{id}")
