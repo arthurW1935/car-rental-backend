@@ -9,21 +9,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class GlobalExceptionHandlers {
-    @ExceptionHandler(ArithmeticException.class)
-    public ResponseEntity<ExceptionDto> handleArithMaticException(){
-        ExceptionDto dto = new ExceptionDto();
-        dto.setMessage("Something went wrong");
-        dto.setResolution("Arithmetic Exception");
-        return new ResponseEntity<>(dto, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(ArrayIndexOutOfBoundsException.class)
-    public ResponseEntity<ExceptionDto> handleArrayIndexOutOfBoundsException(){
-        ExceptionDto dto = new ExceptionDto();
-        dto.setMessage("Something went wrong");
-        dto.setResolution("Array Index Out Of Bounds Exception");
-        return new ResponseEntity<>(dto, HttpStatus.BAD_REQUEST);
-    }
     @ExceptionHandler(BranchNotFoundException.class)
     public ResponseEntity<ExceptionDto> handleBranchNotFoundException(BranchNotFoundException e){
         ExceptionDto dto = new ExceptionDto();
@@ -49,7 +34,7 @@ public class GlobalExceptionHandlers {
     }
 
     @ExceptionHandler(InvalidArgumentException.class)
-    public ResponseEntity<ExceptionDto> InavlidArgumentTypeException(InvalidArgumentException e){
+    public ResponseEntity<ExceptionDto> handleInvalidArgumentTypeException(InvalidArgumentException e){
         ExceptionDto dto = new ExceptionDto();
         dto.setMessage(e.getMessage());
         dto.setResolution("Invalid Argument Type");
@@ -60,7 +45,7 @@ public class GlobalExceptionHandlers {
     public ResponseEntity<ExceptionDto> handleEmployeeAlreadyExistException(EmployeeAlreadyExistsException e){
         ExceptionDto dto = new ExceptionDto();
         dto.setMessage(e.getMessage());
-        dto.setResolution("Employee Already Exists");
+        dto.setResolution("Vehicle Not Found");
         return new ResponseEntity<>(dto,HttpStatus.NOT_FOUND);
     }
 
@@ -68,10 +53,18 @@ public class GlobalExceptionHandlers {
     public ResponseEntity<ExceptionDto> handleInvalidVehicleTypeException(InvalidVehicleTypeException e){
         ExceptionDto dto = new ExceptionDto();
         dto.setMessage(e.getMessage());
-        dto.setResolution("Invalid Vehicle Type");
+        dto.setResolution("Invalid Vehicle Type Exception");
         return new ResponseEntity<>(dto,HttpStatus.NOT_FOUND);
-
     }
+
+    @ExceptionHandler(CustomerAlreadyExistException.class)
+    public ResponseEntity<ExceptionDto> handleCustomerAlreadyException(CustomerAlreadyExistException e){
+        ExceptionDto dto = new ExceptionDto();
+        dto.setMessage(e.getMessage());
+        dto.setResolution("Customer Already Exists");
+        return new ResponseEntity<>(dto,HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(VehicleNotFoundException.class)
     public ResponseEntity<ExceptionDto> handleVehicleNotFoundException(VehicleNotFoundException e){
         ExceptionDto dto = new ExceptionDto();
