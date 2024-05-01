@@ -1,5 +1,6 @@
 package com.group9.carrentalbackend.services;
 
+import com.group9.carrentalbackend.dtos.VehicleDto;
 import com.group9.carrentalbackend.exceptions.BranchNotFoundException;
 import com.group9.carrentalbackend.exceptions.InvalidArgumentException;
 import com.group9.carrentalbackend.exceptions.InvalidVehicleTypeException;
@@ -10,6 +11,7 @@ import com.group9.carrentalbackend.models.VehicleStatus;
 import com.group9.carrentalbackend.models.VehicleType;
 import com.group9.carrentalbackend.repositories.BranchRepository;
 import com.group9.carrentalbackend.repositories.VehicleRepository;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,29 +21,37 @@ import java.util.Optional;
 public class SelfVehicleService implements VehicleService{
     private final VehicleRepository vehicleRepository;
     private final BranchRepository branchRepository;
+    private final SelfBranchService selfBranchService;
 
-    public SelfVehicleService(VehicleRepository vehicleRepository, BranchRepository branchRepository) {
+    public SelfVehicleService(VehicleRepository vehicleRepository, BranchRepository branchRepository, SelfBranchService selfBranchService) {
         this.vehicleRepository = vehicleRepository;
         this.branchRepository = branchRepository;
+        this.selfBranchService = selfBranchService;
     }
     @Override
-    public Vehicle getVehicleById(Long id) {
+    public VehicleDto getVehicleById(Long id) {
         Optional<Vehicle> vehicle = vehicleRepository.findById(id);
         if(vehicle.isEmpty()){
             throw new VehicleNotFoundException(id,"Vehicle not found");
         }
-        return vehicle.get();
+        Vehicle thisProject = vehicle.get();
+        return new VehicleDto(thisProject.getId(), thisProject.getManufacturer(), thisProject.getModel(), thisProject.getYear(), thisProject.getLicensePlateNumber(), thisProject.getCurrentMileage(), thisProject.getVehicleType(), thisProject.getVehicleStatus(), thisProject.getBranch().getId());
     }
 
     @Override
-    public List<Vehicle> getAllVehicles()
+    public List<VehicleDto> getAllVehicles()
 
     {
-        return vehicleRepository.findAll();
+        List<Vehicle> vehicleList = vehicleRepository.findAll();
+        List<VehicleDto> vehicleDtoList =  new java.util.ArrayList<>();
+        for(Vehicle vehicle: vehicleList){
+            vehicleDtoList.add(new VehicleDto(vehicle.getId(), vehicle.getManufacturer(), vehicle.getModel(), vehicle.getYear(), vehicle.getLicensePlateNumber(), vehicle.getCurrentMileage(), vehicle.getVehicleType(), vehicle.getVehicleStatus(), vehicle.getBranch().getId()));
+        }
+        return vehicleDtoList;
     }
 
     @Override
-    public Vehicle createVehicle(Vehicle vehicle) {
+    public VehicleDto createVehicle(Vehicle vehicle) {
         Branch branch = vehicle.getBranch();
 
         if(branch == null){
@@ -49,66 +59,85 @@ public class SelfVehicleService implements VehicleService{
         }
 
         if(branch.getId() == null){
-            vehicle.setBranch(branchRepository.save(branch));
+            Long newBranchId = selfBranchService.createBranch(branch).getId();
+            vehicle.setBranch(branchRepository.findById(newBranchId).get());
         }
 
         Vehicle vehicle1 = vehicleRepository.save(vehicle);
-        Optional<Branch> optionalBranch = branchRepository.findById(vehicle1.getBranch().getId());
-
-        if(optionalBranch.isEmpty()){
-            throw new BranchNotFoundException(vehicle1.getBranch().getId(),"Branch not found");
-        }
-
-        vehicle1.setBranch(optionalBranch.get());
-        return vehicle1;
+        return new VehicleDto(vehicle1.getId(), vehicle1.getManufacturer(), vehicle1.getModel(), vehicle1.getYear(), vehicle1.getLicensePlateNumber(), vehicle.getCurrentMileage(), vehicle.getVehicleType(), vehicle.getVehicleStatus(), vehicle.getBranch().getId());
     }
 
     @Override
-    public Vehicle updateVehicleById(Vehicle vehicle) {
-        Optional<Vehicle> optionalVehicle = vehicleRepository.findById(vehicle.getId());
-        if(optionalVehicle.isEmpty()){
+    public VehicleDto updateVehicleById(Vehicle vehicle) {
+
+        if(vehicle.getId() == null){
+            throw new InvalidArgumentException("Vehicle id must not be empty");
+        }
+        if(vehicleRepository.findById(vehicle.getId()).isEmpty()){
             throw new VehicleNotFoundException(vehicle.getId(),"Vehicle not found");
         }
-        return vehicleRepository.save(vehicle);
+        if(vehicle.getBranch() == null){
+            throw new InvalidArgumentException("Branch id must not be empty");
+        }
+        if(branchRepository.findById(vehicle.getBranch().getId()).isEmpty()){
+            throw new BranchNotFoundException(vehicle.getBranch().getId(),"Branch not found");
+        }
+        Vehicle thisVehicle = vehicleRepository.save(vehicle);
+        return new VehicleDto(thisVehicle.getId(), thisVehicle.getManufacturer(), thisVehicle.getModel(), thisVehicle.getYear(), thisVehicle.getLicensePlateNumber(), thisVehicle.getCurrentMileage(), thisVehicle.getVehicleType(), thisVehicle.getVehicleStatus(), thisVehicle.getBranch().getId());
     }
 
     @Override
-    public Vehicle removeVehicleById(Long id) {
+    public VehicleDto removeVehicleById(Long id) {
         Optional<Vehicle> optionalVehicle = vehicleRepository.findById(id);
         if(optionalVehicle.isEmpty()){
             throw new VehicleNotFoundException(id,"Vehicle not found");
         }
         vehicleRepository.deleteById(id);
-        return optionalVehicle.get();
+        return new VehicleDto(vehicleRepository.findById(id).get().getId(), vehicleRepository.findById(id).get().getManufacturer(), vehicleRepository.findById(id).get().getModel(), vehicleRepository.findById(id).get().getYear(), vehicleRepository.findById(id).get().getLicensePlateNumber(), vehicleRepository.findById(id).get().getCurrentMileage(), vehicleRepository.findById(id).get().getVehicleType(), vehicleRepository.findById(id).get().getVehicleStatus(), vehicleRepository.findById(id).get().getBranch().getId());
     }
 
     @Override
-    public List<Vehicle> getVehiclesByType(String type) {
+    public List<VehicleDto> getVehiclesByType(String type) {
+        List<VehicleDto> vehicleDtoList =  new java.util.ArrayList<>();
         try {
             VehicleType vehicleType = VehicleType.valueOf(type.toUpperCase());
-            return vehicleRepository.findAllByVehicleType(vehicleType);
+            List<Vehicle> vehicleList = vehicleRepository.findAllByVehicleType(vehicleType);
+            for(Vehicle vehicle: vehicleList){
+                vehicleDtoList.add(new VehicleDto(vehicle.getId(), vehicle.getManufacturer(), vehicle.getModel(), vehicle.getYear(), vehicle.getLicensePlateNumber(), vehicle.getCurrentMileage(), vehicle.getVehicleType(), vehicle.getVehicleStatus(), vehicle.getBranch().getId()));
+            }
         } catch (IllegalArgumentException e) {
             throw new InvalidVehicleTypeException(type, "Invalid vehicle type");
         }
+        return vehicleDtoList;
     }
 
     @Override
-    public List<Vehicle> getVehiclesByBranch(Long branchId) {
+    public List<VehicleDto> getVehiclesByBranch(Long branchId) {
         Optional<Branch> optionalBranch = branchRepository.findById(branchId);
         if(optionalBranch.isEmpty()){
             throw new BranchNotFoundException(branchId,"Branch not found");
         }
-        return vehicleRepository.findAllByBranchId(branchId);
+        List<Vehicle> vehicleList = vehicleRepository.findAllByBranchId(branchId);
+        List<VehicleDto> vehicleDtoList =  new java.util.ArrayList<>();
+        for(Vehicle vehicle: vehicleList){
+            vehicleDtoList.add(new VehicleDto(vehicle.getId(), vehicle.getManufacturer(), vehicle.getModel(), vehicle.getYear(), vehicle.getLicensePlateNumber(), vehicle.getCurrentMileage(), vehicle.getVehicleType(), vehicle.getVehicleStatus(), vehicle.getBranch().getId()));
+        }
+        return vehicleDtoList;
     }
 
     @Override
-    public List<Vehicle> getVehiclesByStatus(String status) {
+    public List<VehicleDto> getVehiclesByStatus(String status) {
+        List<VehicleDto> vehicleDtoList =  new java.util.ArrayList<>();
         try {
             VehicleStatus vehicleStatus = VehicleStatus.valueOf(status.toUpperCase());
-            return vehicleRepository.findAllByVehicleStatus(vehicleStatus);
+            List <Vehicle>  thisVehicle= vehicleRepository.findAllByVehicleStatus(vehicleStatus);
+            for (Vehicle vehicle : thisVehicle) {
+                vehicleDtoList.add(new VehicleDto(vehicle.getId(), vehicle.getManufacturer(), vehicle.getModel(), vehicle.getYear(), vehicle.getLicensePlateNumber(), vehicle.getCurrentMileage(), vehicle.getVehicleType(), vehicle.getVehicleStatus(), vehicle.getBranch().getId()));
+            }
         } catch (IllegalArgumentException e) {
             throw new InvalidVehicleTypeException(status, "Invalid Vehicle Status");
         }
+        return vehicleDtoList;
     }
 
 }
