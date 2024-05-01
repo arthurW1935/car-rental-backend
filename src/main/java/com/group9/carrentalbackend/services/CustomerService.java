@@ -11,7 +11,7 @@ public interface CustomerService {
 
     List<Customer> getAllCustomers();
 
-    Customer addCustomer(Customer customer) ;
+    Customer addCustomer(Customer customer) throws CustomerAlreadyExistsException;
 
     Customer updateCustomer(Customer customer) throws CustomerNotFoundException;
 
