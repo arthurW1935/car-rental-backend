@@ -24,8 +24,8 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
     @Override
     void deleteById(Long id);
 
-    List<Vehicle> findAllByType(VehicleType type);
+    List<Vehicle> findAllByVehicleType(VehicleType type);
 
-    List<Vehicle> findAllByStatus(VehicleStatus status);
+    List<Vehicle> findAllByVehicleStatus(VehicleStatus status);
 
 }

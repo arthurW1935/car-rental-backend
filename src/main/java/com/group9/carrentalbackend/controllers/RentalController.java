@@ -9,34 +9,34 @@ import java.util.List;
 @RestController
 @RequestMapping("/rental")
 public class RentalController {
-    @PostMapping("")
+    @PostMapping
     public Rental createRental(@RequestBody Rental rental) {
         return null;
     }
-    @GetMapping
-    public Rental getRentalById(Long id){
+    @GetMapping("/{id}")
+    public Rental getRentalById(@PathVariable Long id){
         return null;
     }
-    @GetMapping("")
+    @GetMapping("/ongoing")
     public List<Rental> getAllOngoingRental() {
         return null;
     }
 
     @GetMapping("/history/customer/{id}")
-    public List<Rental> getRentalHistoryByCustomerId(Long id){
+    public List<Rental> getRentalHistoryByCustomerId(@PathVariable Long id){
         return null;
     }
     @GetMapping("/history/vehicle/{id}")
-    public List<Rental> getRentalHistoryByVehicleId(){
+    public List<Rental> getRentalHistoryByVehicleId(@PathVariable Long id){
         return null;
     }
 
-    @GetMapping("/cost")
-    public Double getRentalCost(CostDto costDto){
+    @PostMapping("/cost")
+    public Double getRentalCost(@RequestBody CostDto costDto){
         return null;
     }
     @DeleteMapping("/{id}")
-    public Rental cancelRentalbyId(@PathVariable Long id){
+    public Rental cancelRentalById(@PathVariable Long id){
         return null;
     }
 }

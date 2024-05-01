@@ -1,26 +1,21 @@
-package com.group9.carrentalbackend.models;
+package com.group9.carrentalbackend.dtos;
 
-import java.util.Date;
-
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-public class Employee {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class EmployeeDto {
     private Long id;
     private String name;
     private String phoneNumber;
     private String email;
     private Date joiningDate;
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Branch branch;
+    private Long branchId;
 }

@@ -1,5 +1,6 @@
 package com.group9.carrentalbackend.services;
 
+import com.group9.carrentalbackend.dtos.BranchDto;
 import com.group9.carrentalbackend.exceptions.BranchNotFoundException;
 import com.group9.carrentalbackend.exceptions.EmployeeNotFoundException;
 import com.group9.carrentalbackend.models.Branch;
@@ -8,6 +9,7 @@ import com.group9.carrentalbackend.repositories.BranchRepository;
 import com.group9.carrentalbackend.repositories.EmployeeRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,36 +23,48 @@ public class SelfBranchService implements BranchService {
         this.employeeRepository = employeeRepository;
     }
     @Override
-    public Branch getBranchById(Long id) throws BranchNotFoundException {
+    public BranchDto getBranchById(Long id) throws BranchNotFoundException {
         Optional<Branch> branch = branchRepository.findById(id);
         if(branch.isEmpty()) {
-            throw new BranchNotFoundException(id, "Product not found");
+            throw new BranchNotFoundException(id, "Branch not found");
         }
-        return branch.get();
+        Branch thisBranch = branch.get();
+        return new BranchDto(thisBranch.getId(), thisBranch.getLocation(), thisBranch.getManager().getId(), thisBranch.getPhoneNumber(), thisBranch.getEmail());
     }
 
     @Override
-    public List<Branch> getAllBranch() {
-        return branchRepository.findAll();
+    public List<BranchDto> getAllBranch() {
+        List<Branch> branchList = branchRepository.findAll();
+        List<BranchDto> branchDtoList = new ArrayList<>();
+        for(Branch branch: branchList){
+            branchDtoList.add(new BranchDto(branch.getId(), branch.getLocation(), branch.getManager().getId(), branch.getPhoneNumber(), branch.getEmail()));
+        }
+        return branchDtoList;
     }
 
     @Override
-    public Branch createBranch(Branch branch) {
+    public BranchDto createBranch(Branch branch) {
         if (branch.getManager().getId() == null) {
             Employee manager = branch.getManager();
+            manager.setBranch(null);
             Employee savedEmployee = employeeRepository.save(manager);
             branch.setManager(savedEmployee);
-        } else{
+        }
+        else{
             Optional<Employee> manager = employeeRepository.findById(branch.getManager().getId());
             if(manager.isEmpty()){
                 throw new EmployeeNotFoundException(branch.getManager().getId(), "Category not found");
             }
             branch.setManager(manager.get());
-        } return branchRepository.save(branch);
+        }
+        Branch newBranch = branchRepository.save(branch);
+        newBranch.getManager().setBranch(newBranch);
+        employeeRepository.save(newBranch.getManager());
+        return new BranchDto(newBranch.getId(), newBranch.getLocation(), newBranch.getManager().getId(), newBranch.getPhoneNumber(), newBranch.getEmail());
     }
 
     @Override
-    public Branch updateBranch(Branch branch) {
+    public BranchDto updateBranch(Branch branch) {
         Optional<Branch> existingBranch = branchRepository.findById(branch.getId());
 
         if(existingBranch.isEmpty()){
@@ -62,6 +76,7 @@ public class SelfBranchService implements BranchService {
             Employee savedEmployee = employeeRepository.save(manager);
             branch.setManager(savedEmployee);
         }
+
         else{
             Optional<Employee> manager = employeeRepository.findById(branch.getManager().getId());
             if(manager.isEmpty()){
@@ -70,19 +85,27 @@ public class SelfBranchService implements BranchService {
             branch.setManager(manager.get());
         }
 
-        return branchRepository.save(branch);
+        Branch thisBranch = branchRepository.save(branch);
+        return new BranchDto(thisBranch.getId(), thisBranch.getLocation(), thisBranch.getManager().getId(), thisBranch.getPhoneNumber(), thisBranch.getEmail());
     }
 
     @Override
-    public Branch deleteBranch(Long id)  {
+    public BranchDto deleteBranch(Long id)  {
         Optional<Branch> existingBranch = branchRepository.findById(id);
 
         if(existingBranch.isEmpty()){
             throw new BranchNotFoundException(id, "Branch not found");
         }
 
+        if(employeeRepository.findAllByBranchId(existingBranch.get().getId()).size() > 1 ){
+            throw new BranchNotFoundException(id, "Branch has more than one employee");
+        }
+
+        existingBranch.get().getManager().setBranch(null);
+        employeeRepository.save(existingBranch.get().getManager());
         branchRepository.delete(existingBranch.get());
 
-        return existingBranch.get();
+        Branch deletedBranch = existingBranch.get();
+        return new BranchDto(deletedBranch.getId(), deletedBranch.getLocation(), deletedBranch.getId(), deletedBranch.getPhoneNumber(), deletedBranch.getEmail());
     }
 }

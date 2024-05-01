@@ -11,7 +11,6 @@ import com.group9.carrentalbackend.models.Vehicle;
 @RequestMapping("/vehicles")
 public class VehicleController {
     private final VehicleService vehicleService;
-
     VehicleController(VehicleService vehicleService) {
         this.vehicleService = vehicleService;
     }
