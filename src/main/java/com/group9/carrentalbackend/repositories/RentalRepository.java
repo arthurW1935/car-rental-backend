@@ -22,5 +22,7 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
     @Override
     void deleteById(Long id);
 
+    List<Rental> findByCustomerId(Long id);
 
+    List<Rental> findByVehicleId(Long id);
 }
