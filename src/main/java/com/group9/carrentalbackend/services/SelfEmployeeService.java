@@ -1,8 +1,8 @@
 package com.group9.carrentalbackend.services;
 
-import com.group9.carrentalbackend.exceptions.EmployeeDeleteException;
+
 import com.group9.carrentalbackend.exceptions.EmployeeNotFoundException;
-import com.group9.carrentalbackend.exceptions.EmployeeUpdateException;
+import com.group9.carrentalbackend.exceptions.InvalidArgumentException;
 import com.group9.carrentalbackend.models.Employee;
 import com.group9.carrentalbackend.repositories.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +21,10 @@ public class SelfEmployeeService implements EmployeeService{
     }
 
     @Override
-    public Employee getEmployeeById(Long id) throws EmployeeNotFoundException {
+    public Employee getEmployeeById(Long id) throws InvalidArgumentException {
         Optional<Employee> employee = employeeRepository.findById(id);
         if (employee.isEmpty()) {
-            throw new EmployeeNotFoundException("Employee not found with id: " + id);
+            throw new InvalidArgumentException("Employee not found with id: " + id);
         }
         return employee.get();
     }
@@ -35,33 +35,32 @@ public class SelfEmployeeService implements EmployeeService{
     }
 
     @Override
-    public Employee createEmployee(Employee employee) {
+    public Employee createEmployee(Employee employee) throws InvalidArgumentException {
+        if(employee.getId()!=null){
+            throw new InvalidArgumentException("Employee id should be null");
+        }
         return employeeRepository.save(employee);
     }
 
     @Override
-    public Employee updateEmployee(Employee employee) throws EmployeeNotFoundException, EmployeeUpdateException {
+    public Employee updateEmployee(Employee employee) throws EmployeeNotFoundException{
         Optional<Employee> existingEmployee = employeeRepository.findById(employee.getId());
         if (existingEmployee.isEmpty()) {
-            throw new EmployeeNotFoundException("Employee not found with id: " + employee.getId());
+            throw new EmployeeNotFoundException(employee.getId() , "Employee not found");
         }
-        try {
-            return employeeRepository.save(employee);
-        } catch (Exception e) {
-            throw new EmployeeUpdateException("Failed to update employee with id: " + employee.getId(), e);
-        }
+        return employeeRepository.save(employee);
     }
 
     @Override
-    public Employee deleteEmployee(Long id) throws EmployeeNotFoundException, EmployeeDeleteException {
+    public Employee deleteEmployee(Long id) throws EmployeeNotFoundException {
         Optional<Employee> existingEmployee = employeeRepository.findById(id);
         if (existingEmployee.isEmpty()) {
-            throw new EmployeeNotFoundException("Employee not found with id: " + id);
+            throw new EmployeeNotFoundException(id, "Employee not found with id: ");
         }
         try {
             employeeRepository.deleteById(id);
         } catch (Exception e) {
-            throw new EmployeeDeleteException("Failed to delete employee with id: " + id, e);
+            throw new EmployeeNotFoundException(id, "Failed to delete employee with id: ");
         }
         return null;
     }
