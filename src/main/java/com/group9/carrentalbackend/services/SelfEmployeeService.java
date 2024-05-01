@@ -43,7 +43,7 @@ public class SelfEmployeeService implements EmployeeService{
     }
 
     @Override
-    public Employee updateEmployee(Employee employee) throws EmployeeNotFoundException{
+    public Employee updateEmployee(Employee employee) {
         Optional<Employee> existingEmployee = employeeRepository.findById(employee.getId());
         if (existingEmployee.isEmpty()) {
             throw new EmployeeNotFoundException(employee.getId() , "Employee not found");
@@ -52,7 +52,7 @@ public class SelfEmployeeService implements EmployeeService{
     }
 
     @Override
-    public Employee deleteEmployee(Long id) throws EmployeeNotFoundException {
+    public Employee deleteEmployee(Long id) {
         Optional<Employee> existingEmployee = employeeRepository.findById(id);
         if (existingEmployee.isEmpty()) {
             throw new EmployeeNotFoundException(id, "Employee not found with id: ");

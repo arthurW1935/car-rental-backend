@@ -33,13 +33,12 @@ public class SelfCustomerService implements CustomerService{
 
     @Override
     public List<Customer> getAllCustomers() {
-
         return customerRepository.findAll();
     }
 
 
     @Override
-    public Customer addCustomer(Customer customer) throws CustomerAlreadyExistException {
+    public Customer addCustomer(Customer customer)  {
 
     Optional<Customer> existingCustomer = customerRepository.findById(customer.getId());
         if(existingCustomer.isPresent()) {
@@ -49,7 +48,7 @@ public class SelfCustomerService implements CustomerService{
     }
 
     @Override
-    public Customer updateCustomer(Customer customer)  throws CustomerNotFoundException{
+    public Customer updateCustomer(Customer customer) {
         Optional<Customer> existingCustomer = customerRepository.findById(customer.getId());
         if(existingCustomer.isEmpty()) {
            throw new CustomerNotFoundException(customer.getId());
@@ -58,7 +57,7 @@ public class SelfCustomerService implements CustomerService{
     }
 
     @Override
-    public Customer deleteCustomer(Long id) throws CustomerNotFoundException{
+    public Customer deleteCustomer(Long id) {
         Optional<Customer> existingCustomer = customerRepository.findById(id);
         if(existingCustomer.isEmpty()) {
                  throw new CustomerNotFoundException(id);
@@ -70,13 +69,14 @@ public class SelfCustomerService implements CustomerService{
     }
 
     @Override
-    public List<Rental> getCustomerHistory(Long id)  throws CustomerNotFoundException{
-        Optional<Customer> existingCustomer = customerRepository.findById(id);
-        if(existingCustomer.isEmpty()) {
-            throw new CustomerNotFoundException(id);
-        }
-
-      return rentalRepository.fidbyCustomer(id);
+    public List<Rental> getCustomerHistory(Long id) {
+//        Optional<Customer> existingCustomer = customerRepository.findById(id);
+//        if(existingCustomer.isEmpty()) {
+//            throw new CustomerNotFoundException(id);
+//        }
+//
+//      return rentalRepository.fidbyCustomer(id);
+        return null;
     }
 
 }

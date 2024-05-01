@@ -6,6 +6,8 @@ import com.group9.carrentalbackend.exceptions.VehicleNotFoundException;
 import com.group9.carrentalbackend.models.Branch;
 import com.group9.carrentalbackend.models.Vehicle;
 import com.group9.carrentalbackend.models.VehicleType;
+import com.group9.carrentalbackend.repositories.BranchRepository;
+import com.group9.carrentalbackend.repositories.VehicleRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -76,7 +78,7 @@ public class SelfVehicleService implements VehicleService{
     public List<Vehicle> getVehiclesByType(String type) {
         try {
             VehicleType vehicleType = VehicleType.valueOf(type.toUpperCase());
-            return vehicleRepository.findByType(vehicleType);
+            return vehicleRepository.findAllByType(vehicleType);
         } catch (IllegalArgumentException e) {
             throw new InvalidVehicleTypeException(type, "Invalid vehicle type");
         }
@@ -84,10 +86,22 @@ public class SelfVehicleService implements VehicleService{
 
     @Override
     public List<Vehicle> getVehiclesByBranch(Long branchId) {
-        Optional<Branch> optionalBranch = branchRepository.findById(branchId);
-        if(optionalBranch.isEmpty()){
-            throw new BranchNotFoundException(branchId,"Branch not found");
-        }
-        return vehicleRepository.findByBranch(optionalBranch.get());
+//        Optional<Branch> optionalBranch = branchRepository.findById(branchId);
+//        if(optionalBranch.isEmpty()){
+//            throw new BranchNotFoundException(branchId,"Branch not found");
+//        }
+//        return vehicleRepository.findByBranch(optionalBranch.get());
+        return null;
     }
+
+    @Override
+    public List<Vehicle> getVehiclesByStatus(String status) {
+        try {
+            VehicleType vehicleType = VehicleType.valueOf(status.toUpperCase());
+            return vehicleRepository.findAllByType(vehicleType);
+        } catch (IllegalArgumentException e) {
+            throw new InvalidVehicleTypeException(status, "Invalid vehicle type");
+        }
+    }
+
 }

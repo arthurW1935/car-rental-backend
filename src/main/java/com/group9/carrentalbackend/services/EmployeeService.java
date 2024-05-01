@@ -10,9 +10,9 @@ import java.util.List;
 
 public interface EmployeeService {
 
-    Employee getEmployeeById(Long id) throws InvalidArgumentException;
+    Employee getEmployeeById(Long id);
     List<Employee> getEmployees();
-    Employee createEmployee(Employee employee) throws InvalidArgumentException;
+    Employee createEmployee(Employee employee);
     Employee updateEmployee(Employee employee);
     Employee deleteEmployee(Long id);
     List<Employee> getEmployeesByBranch(Long branchId);

@@ -1,8 +1,8 @@
 package com.group9.carrentalbackend.repositories;
 
-import com.group9.carrentalbackend.models.Status;
-import com.group9.carrentalbackend.models.Type;
 import com.group9.carrentalbackend.models.Vehicle;
+import com.group9.carrentalbackend.models.VehicleStatus;
+import com.group9.carrentalbackend.models.VehicleType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -24,8 +24,8 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
     @Override
     void deleteById(Long id);
 
-    List<Vehicle> findAllByType(Type type);
+    List<Vehicle> findAllByType(VehicleType type);
 
-    List<Vehicle> findAllByStatus(Status status);
+    List<Vehicle> findAllByStatus(VehicleStatus status);
 
 }

@@ -49,5 +49,10 @@ public class VehicleController {
     @GetMapping("/branch/{id}")
     public List<Vehicle> getVehiclesByBranch(@PathVariable Long id) {
         return vehicleService.getVehiclesByBranch(id);
-    }
+    }
+
+    @GetMapping("/status")
+    public List<Vehicle> getVehiclesByStatus(@RequestParam String status) {
+        return vehicleService.getVehiclesByType(status);
+    }
 }

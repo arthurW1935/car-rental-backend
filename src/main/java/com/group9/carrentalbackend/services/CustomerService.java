@@ -8,15 +8,15 @@ import com.group9.carrentalbackend.models.Rental;
 import java.util.List;
 
 public interface CustomerService {
-    Customer getCustomerById(Long id) throws CustomerNotFoundException;
+    Customer getCustomerById(Long id);
 
     List<Customer> getAllCustomers();
 
-    Customer addCustomer(Customer customer) throws CustomerAlreadyExistException;
+    Customer addCustomer(Customer customer);
 
-    Customer updateCustomer(Customer customer) throws CustomerNotFoundException;
+    Customer updateCustomer(Customer customer);
 
-    Customer deleteCustomer(Long id) throws CustomerNotFoundException;
+    Customer deleteCustomer(Long id);
 
-    List<Rental> getCustomerHistory(Long id) throws CustomerNotFoundException;
+    List<Rental> getCustomerHistory(Long id);
 }

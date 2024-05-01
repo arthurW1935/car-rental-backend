@@ -50,7 +50,7 @@ public class SelfBranchService implements BranchService {
     }
 
     @Override
-    public Branch updateBranch(Branch branch) throws EmployeeNotFoundException {
+    public Branch updateBranch(Branch branch) {
         Optional<Branch> existingBranch = branchRepository.findById(branch.getId());
 
         if(existingBranch.isEmpty()){
@@ -74,7 +74,7 @@ public class SelfBranchService implements BranchService {
     }
 
     @Override
-    public Branch deleteBranch(Long id) throws BranchNotFoundException {
+    public Branch deleteBranch(Long id)  {
         Optional<Branch> existingBranch = branchRepository.findById(id);
 
         if(existingBranch.isEmpty()){

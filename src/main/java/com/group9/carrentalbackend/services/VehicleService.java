@@ -13,4 +13,5 @@ public interface VehicleService {
     public Vehicle removeVehicleById(Long id);
     public List<Vehicle> getVehiclesByType(String vehicleType);
     public List<Vehicle> getVehiclesByBranch(Long branchId);
+    public List<Vehicle> getVehiclesByStatus(String status);
 }
