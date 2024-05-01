@@ -1,6 +1,7 @@
 package com.group9.carrentalbackend.services;
 
 import com.group9.carrentalbackend.exceptions.BranchNotFoundException;
+import com.group9.carrentalbackend.exceptions.InvalidVehicleTypeException;
 import com.group9.carrentalbackend.exceptions.VehicleNotFoundException;
 import com.group9.carrentalbackend.models.Branch;
 import com.group9.carrentalbackend.models.Vehicle;
@@ -77,7 +78,7 @@ public class SelfVehicleService implements VehicleService{
             VehicleType vehicleType = VehicleType.valueOf(type.toUpperCase());
             return vehicleRepository.findByType(vehicleType);
         } catch (IllegalArgumentException e) {
-            throw new VehicleTypeNotFoundException(type, "Vehicle type not found");
+            throw new InvalidVehicleTypeException(type, "Invalid vehicle type");
         }
     }
 
