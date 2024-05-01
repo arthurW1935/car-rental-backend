@@ -5,9 +5,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class VehicleTypeNotFoundException extends IllegalArgumentException{
+public class InvalidVehicleTypeException extends IllegalArgumentException{
     private String vehicleType;
-    public VehicleTypeNotFoundException(String vehicleType, String message) {
+    public InvalidVehicleTypeException(String vehicleType, String message) {
         super(message);
         this.vehicleType = vehicleType;
     }
