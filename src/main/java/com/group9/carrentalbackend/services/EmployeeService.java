@@ -4,21 +4,30 @@ import com.group9.carrentalbackend.exceptions.EmployeeDeleteException;
 import com.group9.carrentalbackend.exceptions.EmployeeNotFoundException;
 import com.group9.carrentalbackend.exceptions.EmployeeUpdateException;
 import com.group9.carrentalbackend.models.Employee;
+import com.group9.carrentalbackend.repositories.EmployeeRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface EmployeeService {
+
     Employee getEmployeeById(Long id);
     List<Employee> getEmployees();
     Employee createEmployee(Employee employee);
-    Employee updateEmployee(Employee employee);
-    void deleteEmployee(Long id);
+    Employee updateEmployee(Employee employee) throws EmployeeUpdateException;
+    void deleteEmployee(Long id) throws EmployeeDeleteException;
     List<Employee> getEmployeesByBranch(Long branchId);
 
     @Service
     class EmployeeServiceImpl implements EmployeeService {
+
+        private final EmployeeRepository employeeRepository;
+        @Autowired
+        public EmployeeServiceImpl(EmployeeRepository employeeRepository) {
+            this.employeeRepository = employeeRepository;
+        }
 
         @Override
         public Employee getEmployeeById(Long id) throws EmployeeNotFoundException {

@@ -21,5 +21,5 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     @Override
     void deleteById(Long id);
 
-    List<Employee> findByBranch(Long branchId);
+    List<Employee> findByBranchId(Long branchId);
 }
