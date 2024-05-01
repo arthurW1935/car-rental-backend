@@ -10,7 +10,7 @@ import java.util.List;
 @RequestMapping("/customers")
 class CustomerController {
     @GetMapping("/{id}")
-    public Customer getCustomerbyId(@PathVariable Long id) {
+    public Customer getCustomerById(@PathVariable Long id) {
         return null;
     }
     @GetMapping
