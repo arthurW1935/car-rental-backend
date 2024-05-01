@@ -67,15 +67,4 @@ public class SelfCustomerService implements CustomerService{
 
     }
 
-    @Override
-    public List<Rental> getCustomerHistory(Long id) {
-//        Optional<Customer> existingCustomer = customerRepository.findById(id);
-//        if(existingCustomer.isEmpty()) {
-//            throw new CustomerNotFoundException(id, "Customer not found");
-//        }
-//
-//      return rentalRepository.fidbyCustomer(id);
-        return null;
-    }
-
 }

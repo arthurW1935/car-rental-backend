@@ -18,5 +18,4 @@ public interface CustomerService {
 
     Customer deleteCustomer(Long id);
 
-    List<Rental> getCustomerHistory(Long id);
 }

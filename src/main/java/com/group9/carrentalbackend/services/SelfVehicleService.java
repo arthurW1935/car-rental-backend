@@ -1,6 +1,7 @@
 package com.group9.carrentalbackend.services;
 
 import com.group9.carrentalbackend.exceptions.BranchNotFoundException;
+import com.group9.carrentalbackend.exceptions.InvalidArgumentException;
 import com.group9.carrentalbackend.exceptions.InvalidVehicleTypeException;
 import com.group9.carrentalbackend.exceptions.VehicleNotFoundException;
 import com.group9.carrentalbackend.models.Branch;
@@ -33,13 +34,19 @@ public class SelfVehicleService implements VehicleService{
     }
 
     @Override
-    public List<Vehicle> getAllVehicles() {
+    public List<Vehicle> getAllVehicles()
+
+    {
         return vehicleRepository.findAll();
     }
 
     @Override
     public Vehicle createVehicle(Vehicle vehicle) {
         Branch branch = vehicle.getBranch();
+
+        if(branch == null){
+            throw new InvalidArgumentException("Branch must not be empty");
+        }
 
         if(branch.getId() == null){
             vehicle.setBranch(branchRepository.save(branch));

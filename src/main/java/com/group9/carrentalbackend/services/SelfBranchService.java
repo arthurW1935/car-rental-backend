@@ -53,7 +53,7 @@ public class SelfBranchService implements BranchService {
         else{
             Optional<Employee> manager = employeeRepository.findById(branch.getManager().getId());
             if(manager.isEmpty()){
-                throw new EmployeeNotFoundException(branch.getManager().getId(), "Category not found");
+                throw new EmployeeNotFoundException(branch.getManager().getId(), "Employee not found");
             }
             branch.setManager(manager.get());
         }
