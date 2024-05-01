@@ -1,6 +1,7 @@
 package com.group9.carrentalbackend.controllers;
 
 import com.group9.carrentalbackend.models.Branch;
+import com.group9.carrentalbackend.services.BranchService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -8,7 +9,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/branch")
 public class BranchController {
-
     @GetMapping
     public Branch getBranchById(){
         return null;

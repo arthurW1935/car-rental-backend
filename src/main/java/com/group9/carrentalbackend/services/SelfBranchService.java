@@ -1,7 +1,6 @@
 package com.group9.carrentalbackend.services;
 
 import com.group9.carrentalbackend.exceptions.BranchNotFoundException;
-import com.group9.carrentalbackend.exceptions.EmployeeNotFoundException;
 import com.group9.carrentalbackend.models.Branch;
 import com.group9.carrentalbackend.models.Employee;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,7 @@ public class SelfBranchService implements BranchService {
         this.employeeRepository = employeeRepository;
     }
     @Override
-    public Branch getBranchById(Long id) {
+    public Branch getBranchById(Long id) throws BranchNotFoundException {
         Optional<Branch> branch = branchRepository.findById(id);
         if(branch.isEmpty()) {
             throw new BranchNotFoundException(id, "Product not found");
