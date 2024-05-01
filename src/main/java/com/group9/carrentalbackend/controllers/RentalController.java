@@ -1,6 +1,7 @@
 package com.group9.carrentalbackend.controllers;
 
 import com.group9.carrentalbackend.dtos.CostDto;
+import com.group9.carrentalbackend.dtos.RentalDto;
 import com.group9.carrentalbackend.models.Rental;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,8 +10,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/rental")
 public class RentalController {
-    @PostMapping
-    public Rental createRental(@RequestBody Rental rental) {
+    @PostMapping("")
+    public Rental createRental(@RequestBody RentalDto rentalDto) {
         return null;
     }
     @GetMapping("/{id}")
@@ -28,11 +29,19 @@ public class RentalController {
     }
     @GetMapping("/history/vehicle/{id}")
     public List<Rental> getRentalHistoryByVehicleId(@PathVariable Long id){
+
         return null;
     }
-
-    @PostMapping("/cost")
-    public Double getRentalCost(@RequestBody CostDto costDto){
+    @GetMapping("/reservation/vehicle/{id}")
+    public List<Rental> getReservationByVehicleId(@PathVariable Long id){
+        return null;
+    }
+    @GetMapping("/reservation/customer/{id}")
+    public List<Rental> getReservationByCustomerId(@PathVariable Long id){
+        return null;
+    }
+    @GetMapping("/cost")
+    public Double getRentalCost(CostDto costDto){
         return null;
     }
     @DeleteMapping("/{id}")

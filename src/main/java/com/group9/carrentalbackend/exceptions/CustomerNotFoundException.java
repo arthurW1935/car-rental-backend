@@ -7,8 +7,8 @@ import lombok.Setter;
 public class CustomerNotFoundException extends RuntimeException{
 
     private Long id;
-    public CustomerNotFoundException(Long id) {
-        super("Customer with id " + id + " not found.");
+    public CustomerNotFoundException(Long id, String message) {
+        super(message);
         this.id=id;
     }
 }

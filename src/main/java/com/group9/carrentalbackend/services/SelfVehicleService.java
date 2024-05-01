@@ -87,12 +87,11 @@ public class SelfVehicleService implements VehicleService{
 
     @Override
     public List<Vehicle> getVehiclesByBranch(Long branchId) {
-//        Optional<Branch> optionalBranch = branchRepository.findById(branchId);
-//        if(optionalBranch.isEmpty()){
-//            throw new BranchNotFoundException(branchId,"Branch not found");
-//        }
-//        return vehicleRepository.findByBranch(optionalBranch.get());
-        return null;
+        Optional<Branch> optionalBranch = branchRepository.findById(branchId);
+        if(optionalBranch.isEmpty()){
+            throw new BranchNotFoundException(branchId,"Branch not found");
+        }
+        return vehicleRepository.findAllByBranchId(branchId);
     }
 
     @Override
@@ -101,7 +100,7 @@ public class SelfVehicleService implements VehicleService{
             VehicleStatus vehicleStatus = VehicleStatus.valueOf(status.toUpperCase());
             return vehicleRepository.findAllByVehicleStatus(vehicleStatus);
         } catch (IllegalArgumentException e) {
-            throw new InvalidVehicleTypeException(status, "Invalid vehicle type");
+            throw new InvalidVehicleTypeException(status, "Invalid Vehicle Status");
         }
     }
 
