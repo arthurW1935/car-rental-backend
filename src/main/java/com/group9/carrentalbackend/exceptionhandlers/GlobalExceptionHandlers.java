@@ -73,4 +73,22 @@ public class GlobalExceptionHandlers {
         return new ResponseEntity<>(dto,HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(RentalNotFoundException.class)
+    public ResponseEntity<ExceptionDto> handleRentalNotFoundException(RentalNotFoundException e){
+        ExceptionDto dto = new ExceptionDto();
+        dto.setMessage(e.getMessage());
+        dto.setResolution("Rental Not Found");
+        return new ResponseEntity<>(dto,HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(RentalNotAvailableException.class)
+    public ResponseEntity<ExceptionDto> handleRentalNotAvailableException(RentalNotAvailableException e){
+        ExceptionDto dto = new ExceptionDto();
+        dto.setMessage(e.getMessage());
+        dto.setResolution("Rental Not Available");
+        return new ResponseEntity<>(dto,HttpStatus.NOT_FOUND);
+    }
+
+
+
 }

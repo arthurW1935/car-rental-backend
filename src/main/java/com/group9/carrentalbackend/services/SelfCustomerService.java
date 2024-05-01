@@ -2,6 +2,7 @@ package com.group9.carrentalbackend.services;
 
 import com.group9.carrentalbackend.exceptions.CustomerAlreadyExistException;
 import com.group9.carrentalbackend.exceptions.CustomerNotFoundException;
+import com.group9.carrentalbackend.exceptions.InvalidArgumentException;
 import com.group9.carrentalbackend.models.Customer;
 import com.group9.carrentalbackend.models.Rental;
 import com.group9.carrentalbackend.repositories.CustomerRepository;
@@ -39,10 +40,16 @@ public class SelfCustomerService implements CustomerService{
     @Override
     public Customer addCustomer(Customer customer)  {
 
-    Optional<Customer> existingCustomer = customerRepository.findById(customer.getId());
-        if(existingCustomer.isPresent()) {
-            throw new CustomerAlreadyExistException(customer.getId(),"Customer Already exists");
-        }
+       if(customer.getId()!=null){
+           Optional<Customer> existingCustomer = customerRepository.findById(customer.getId());
+           if(existingCustomer.isPresent()) {
+               throw new CustomerAlreadyExistException(customer.getId(),"Customer Already exists");
+           }
+           else{
+               throw new InvalidArgumentException("Id should not be provided");
+           }
+       }
+
         return customerRepository.save(customer);
     }
 
