@@ -1,5 +1,8 @@
 package com.group9.carrentalbackend.services;
 
+import com.group9.carrentalbackend.exceptions.EmployeeDeleteException;
+import com.group9.carrentalbackend.exceptions.EmployeeNotFoundException;
+import com.group9.carrentalbackend.exceptions.EmployeeUpdateException;
 import com.group9.carrentalbackend.models.Employee;
 import org.springframework.stereotype.Service;
 
@@ -18,10 +21,10 @@ public interface EmployeeService {
     class EmployeeServiceImpl implements EmployeeService {
 
         @Override
-        public Employee getEmployeeById(Long id) {
+        public Employee getEmployeeById(Long id) throws EmployeeNotFoundException {
             Optional<Employee> employee = employeeRepository.findById(id);
-            if(employee.isEmpty()){
-                return null; // throw exception
+            if (employee.isEmpty()) {
+                throw new EmployeeNotFoundException("Employee not found with id: " + id);
             }
             return employee.get();
         }
@@ -37,21 +40,29 @@ public interface EmployeeService {
         }
 
         @Override
-        public Employee updateEmployee(Employee employee) {
+        public Employee updateEmployee(Employee employee) throws EmployeeNotFoundException, EmployeeUpdateException {
             Optional<Employee> existingEmployee = employeeRepository.findById(employee.getId());
-            if(existingEmployee.isEmpty()){
-                return null; // throw exception
+            if (existingEmployee.isEmpty()) {
+                throw new EmployeeNotFoundException("Employee not found with id: " + employee.getId());
             }
-            return employeeRepository.save(employee);
+            try {
+                return employeeRepository.save(employee);
+            } catch (Exception e) {
+                throw new EmployeeUpdateException("Failed to update employee with id: " + employee.getId(), e);
+            }
         }
 
         @Override
-        public void deleteEmployee(Long id) {
+        public void deleteEmployee(Long id) throws EmployeeNotFoundException, EmployeeDeleteException {
             Optional<Employee> existingEmployee = employeeRepository.findById(id);
-            if(existingEmployee.isEmpty()){
-                return; // throw exception
+            if (existingEmployee.isEmpty()) {
+                throw new EmployeeNotFoundException("Employee not found with id: " + id);
             }
-            employeeRepository.deleteById(id);
+            try {
+                employeeRepository.deleteById(id);
+            } catch (Exception e) {
+                throw new EmployeeDeleteException("Failed to delete employee with id: " + id, e);
+            }
         }
 
         @Override

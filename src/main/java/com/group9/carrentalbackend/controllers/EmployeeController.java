@@ -3,12 +3,17 @@ package com.group9.carrentalbackend.controllers;
 import java.util.List;
 
 import com.group9.carrentalbackend.models.Employee;
+import com.group9.carrentalbackend.services.EmployeeService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("employee")
 public class EmployeeController {
+
+    @Autowired
+    private EmployeeService employeeService;
 
     @GetMapping("/{id}")
     public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id){
