@@ -12,15 +12,13 @@ In this project we have developed a comprehensive system for managing car rental
 * [@garvit420](https://github.com/garvit420)
 
 ## Installation
+* Clone the repository to your local machine using the command ` git clone https://github.com/arthurW1935/car-rental-backend.git `.
 * We recommend installing an IDE for this project. We used [IntelliJ](https://www.jetbrains.com/idea/).
 * Install [Docker](https://www.docker.com/products/docker-desktop/) and set it up as per your operating system.
 * Docker Installation Guide [Windows](https://youtu.be/WDEdRmTCSs8), [Linux](https://youtu.be/5_EA3rBCXmU), [Mac](https://youtu.be/-EXlfSsP49A).
 * After installing Docker, ensure it is running. Then, navigate to your project directory and run the command `docker compose up` in the terminal. If you encounter any errors, check the `docker-compose.yml` file in the project directory for conflicting port usage.
 * We recommend installing [Postman](https://www.postman.com/downloads/) for testing api calls.
 * Now, finally run the `CarRentalBackendApplication` present in your project directory to start the project.
-
-## Contribution
-* In case you want to contribute, please check out `contribution.md`.
 
 ## Documentation
 ### Models Involved
