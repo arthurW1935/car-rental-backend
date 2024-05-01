@@ -1,7 +1,7 @@
 package com.group9.carrentalbackend.controllers;
 
 import com.group9.carrentalbackend.models.Customer;
-import com.group9.carrentalbackend.repositories.EmployeeRepository;
+import com.group9.carrentalbackend.models.Rental;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,10 +28,11 @@ class CustomerController {
         return null;
 }
     @DeleteMapping("/{id}")
-    public void deleteCustomer(@PathVariable Long id) {
+    public Customer deleteCustomer(@PathVariable Long id) {
+        return null;
     }
     @GetMapping("/{id}/history")
-    public List<Customer> getCustomerHistory(@PathVariable Long id) {
+    public List<Rental> getCustomerHistory(@PathVariable Long id) {
         return null;
     }
 
