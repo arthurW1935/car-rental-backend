@@ -21,6 +21,6 @@ public class Employee {
     private String phoneNumber;
     private String email;
     private Date joiningDate;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Branch branch;
 }
