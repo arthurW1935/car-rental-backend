@@ -2,6 +2,7 @@ package com.group9.carrentalbackend.services;
 
 import com.group9.carrentalbackend.dtos.CostDto;
 import com.group9.carrentalbackend.dtos.RentalDto;
+import com.group9.carrentalbackend.dtos.RentalOutputDto;
 import com.group9.carrentalbackend.exceptions.CustomerNotFoundException;
 import com.group9.carrentalbackend.exceptions.RentalNotAvailableException;
 import com.group9.carrentalbackend.exceptions.RentalNotFoundException;
@@ -16,6 +17,7 @@ import com.group9.carrentalbackend.repositories.VehicleRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.Calendar;
@@ -28,12 +30,14 @@ public class SelfRentalService implements RentalService{
     CustomerRepository customerRepository;
     RentalRepository rentalRepository;
     VehicleRepository vehicleRepository;
-    public SelfRentalService(CustomerRepository customerRepository, RentalRepository rentalRepository, VehicleRepository vehicleRepository){
+
+    public SelfRentalService(CustomerRepository customerRepository, RentalRepository rentalRepository, VehicleRepository vehicleRepository) {
         this.customerRepository = customerRepository;
         this.rentalRepository = rentalRepository;
+        this.vehicleRepository = vehicleRepository;
     }
     @Override
-    public Rental createRental(RentalDto rentalDto) {
+    public RentalOutputDto createRental(RentalDto rentalDto) {
         Date startDate = rentalDto.getStartDate();
         Date endDate = rentalDto.getEndDate();
 
@@ -60,7 +64,9 @@ public class SelfRentalService implements RentalService{
         Rental rental = new Rental(rentalDto.getId(), optionalVehicle.get(), optionalCustomer.get(), startDate, endDate, totalCost);
         Rental savedRental = rentalRepository.save(rental);
 
-        return savedRental;
+        RentalOutputDto rentalOutputDto = new RentalOutputDto(savedRental.getId(), savedRental.getVehicle().getId(), savedRental.getCustomer().getId(), savedRental.getStartDate(), savedRental.getEndDate(), savedRental.getTotalCost());
+
+        return rentalOutputDto;
     }
 
     private boolean createRentalCheck(Long vehicleId, Date startDate, Date endDate){
@@ -143,16 +149,23 @@ public class SelfRentalService implements RentalService{
         Date startDate = costDto.getStartDate();
         Date endDate = costDto.getEndDate();
 
-        long numberOfDays = ChronoUnit.DAYS.between((Temporal) startDate, (Temporal) endDate);
-        Double cost = (double) 0;int a = 100;
-        if(vehicle.getVehicleType().equals("TWO_WHEELER")) {
+        LocalDate startLocalDate = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate endLocalDate = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        long numberOfDays = ChronoUnit.DAYS.between(startLocalDate, endLocalDate);
+
+        Double cost = 0.0;
+        int a = 100;
+
+        if (vehicle.getVehicleType().name().equals("TWO_WHEELER")) {
             cost += numberOfDays * a;
+        } else {
+            cost += numberOfDays * b;
         }
-        else{
-             cost += numberOfDays*b;
-        }
+
         return cost;
     }
+
 
 
     @Override

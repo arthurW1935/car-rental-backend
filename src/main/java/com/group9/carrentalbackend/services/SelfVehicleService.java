@@ -127,6 +127,7 @@ public class SelfVehicleService implements VehicleService{
 
     @Override
     public List<VehicleDto> getVehiclesByStatus(String status) {
+        System.out.println(status);
         List<VehicleDto> vehicleDtoList =  new java.util.ArrayList<>();
         try {
             VehicleStatus vehicleStatus = VehicleStatus.valueOf(status.toUpperCase());

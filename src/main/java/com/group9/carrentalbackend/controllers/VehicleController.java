@@ -53,6 +53,6 @@ public class VehicleController {
 
     @GetMapping("/status")
     public List<VehicleDto> getVehiclesByStatus(@RequestParam String status) {
-        return vehicleService.getVehiclesByType(status);
+        return vehicleService.getVehiclesByStatus(status);
     }
 }
