@@ -21,6 +21,10 @@ In this project we have developed a comprehensive system for managing car rental
 * Now, finally run the `CarRentalBackendApplication` present in your project directory to start the project.
 
 ## Documentation
+
+![image](https://github.com/arthurW1935/car-rental-backend/assets/69480979/9c7ced28-9efe-4d2a-b3d8-0ebd0850d7dd)
+
+
 ### Models Involved
 * Branch
 * Customer
