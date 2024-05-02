@@ -463,6 +463,7 @@ IntelliJ IDEA
    Output: A `Rental` object with the details of the cancelled rental.
 
 
+
 1. /vehicles/{id}
 
    Input: An ID of an existing vehicle, for example `1`.
@@ -473,12 +474,12 @@ IntelliJ IDEA
        "id": 1,
        "manufacturer": "Toyota",
        "model": "Camry",
-       "registrationYear": "2018",
-       "numberPlate": "ABC-123",
-       "mileage": 50000,
-       "branchId": 1,
-       "vehicleTypeId": 1,
-       "vehicleStatusId": 1
+       "year": 2018,
+       "licensePlateNumber": "ABC-123",
+       "currentMileage": 50000.0,
+       "vehicleType": "FOUR_WHEELER",
+       "vehicleStatus": "AVAILABLE",
+       "branchId": 1
    }
    ```
 
@@ -493,46 +494,40 @@ IntelliJ IDEA
            "id": 1,
            "manufacturer": "Toyota",
            "model": "Camry",
-           "registrationYear": "2018",
-           "numberPlate": "ABC-123",
-           "mileage": 50000,
-           "branchId": 1,
-           "vehicleTypeId": 1,
-           "vehicleStatusId": 1
+           "year": 2018,
+           "licensePlateNumber": "ABC-123",
+           "currentMileage": 50000.0,
+           "vehicleType": "FOUR_WHEELER",
+           "vehicleStatus": "AVAILABLE",
+           "branchId": 1
        },
        {
            "id": 2,
            "manufacturer": "Honda",
            "model": "Civic",
-           "registrationYear": "2019",
-           "numberPlate": "XYZ-456",
-           "mileage": 40000,
-           "branchId": 2,
-           "vehicleTypeId": 1,
-           "vehicleStatusId": 1
+           "year": 2019,
+           "licensePlateNumber": "XYZ-456",
+           "currentMileage": 40000.0,
+           "vehicleType": "FOUR_WHEELER",
+           "vehicleStatus": "RENTED",
+           "branchId": 2
        }
    ]
    ```
 
 3. /vehicles (POST)
 
-   Input: A `Vehicle` object without an ID. For example:
+   Input: A `VehicleDto` object without an ID. For example:
    ```json
    {
        "manufacturer": "Toyota",
        "model": "Camry",
-       "registrationYear": "2018",
-       "numberPlate": "ABC-123",
-       "mileage": 50000,
-       "branch": {
-           "id": 1
-       },
-       "vehicleType": {
-           "id": 1
-       },
-       "vehicleStatus": {
-           "id": 1
-       }
+       "year": 2018,
+       "licensePlateNumber": "ABC-123",
+       "currentMileage": 50000.0,
+       "vehicleType": "FOUR_WHEELER",
+       "vehicleStatus": "AVAILABLE",
+       "branchId": 1
    }
    ```
 
@@ -542,35 +537,29 @@ IntelliJ IDEA
        "id": 1,
        "manufacturer": "Toyota",
        "model": "Camry",
-       "registrationYear": "2018",
-       "numberPlate": "ABC-123",
-       "mileage": 50000,
-       "branchId": 1,
-       "vehicleTypeId": 1,
-       "vehicleStatusId": 1
+       "year": 2018,
+       "licensePlateNumber": "ABC-123",
+       "currentMileage": 50000.0,
+       "vehicleType": "FOUR_WHEELER",
+       "vehicleStatus": "AVAILABLE",
+       "branchId": 1
    }
    ```
 
 4. /vehicles/{id} (PUT)
 
-   Input: A `Vehicle` object with an ID. For example:
+   Input: A `VehicleDto` object with an ID. For example:
    ```json
    {
        "id": 1,
        "manufacturer": "Toyota",
        "model": "Camry",
-       "registrationYear": "2018",
-       "numberPlate": "ABC-123",
-       "mileage": 50000,
-       "branch": {
-           "id": 1
-       },
-       "vehicleType": {
-           "id": 1
-       },
-       "vehicleStatus": {
-           "id": 1
-       }
+       "year": 2018,
+       "licensePlateNumber": "ABC-123",
+       "currentMileage": 50000.0,
+       "vehicleType": "FOUR_WHEELER",
+       "vehicleStatus": "AVAILABLE",
+       "branchId": 1
    }
    ```
 
@@ -580,12 +569,12 @@ IntelliJ IDEA
        "id": 1,
        "manufacturer": "Toyota",
        "model": "Camry",
-       "registrationYear": "2018",
-       "numberPlate": "ABC-123",
-       "mileage": 50000,
-       "branchId": 1,
-       "vehicleTypeId": 1,
-       "vehicleStatusId": 1
+       "year": 2018,
+       "licensePlateNumber": "ABC-123",
+       "currentMileage": 50000.0,
+       "vehicleType": "FOUR_WHEELER",
+       "vehicleStatus": "AVAILABLE",
+       "branchId": 1
    }
    ```
 
@@ -599,12 +588,12 @@ IntelliJ IDEA
        "id": 1,
        "manufacturer": "Toyota",
        "model": "Camry",
-       "registrationYear": "2018",
-       "numberPlate": "ABC-123",
-       "mileage": 50000,
-       "branchId": 1,
-       "vehicleTypeId": 1,
-       "vehicleStatusId": 1
+       "year": 2018,
+       "licensePlateNumber": "ABC-123",
+       "currentMileage": 50000.0,
+       "vehicleType": "FOUR_WHEELER",
+       "vehicleStatus": "AVAILABLE",
+       "branchId": 1
    }
    ```
 
@@ -619,25 +608,26 @@ IntelliJ IDEA
            "id": 1,
            "manufacturer": "Toyota",
            "model": "Camry",
-           "registrationYear": "2018",
-           "numberPlate": "ABC-123",
-           "mileage": 50000,
-           "branchId": 1,
-           "vehicleTypeId": 1,
-           "vehicleStatusId": 1
+           "year": 2018,
+           "licensePlateNumber": "ABC-123",
+           "currentMileage": 50000.0,
+           "vehicleType": "FOUR_WHEELER",
+           "vehicleStatus": "AVAILABLE",
+           "branchId": 1
        },
        {
            "id": 2,
            "manufacturer": "Honda",
            "model": "Civic",
-           "registrationYear": "2019",
-           "numberPlate": "XYZ-456",
-           "mileage": 40000,
-           "branchId": 1,
-           "vehicleTypeId": 1,
-           "vehicleStatusId": 1
+           "year": 2019,
+           "licensePlateNumber": "XYZ-456",
+           "currentMileage": 40000.0,
+           "vehicleType": "FOUR_WHEELER",
+           "vehicleStatus": "RENTED",
+           "branchId": 1
        }
    ]
    ```
+
 
 
