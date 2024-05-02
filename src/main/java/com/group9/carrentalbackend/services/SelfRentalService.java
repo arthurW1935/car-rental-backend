@@ -20,10 +20,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class SelfRentalService implements RentalService{
@@ -80,87 +77,116 @@ public class SelfRentalService implements RentalService{
     }
 
     @Override
-    public Rental getRentalById(Long id) {
+    public RentalOutputDto getRentalById(Long id) {
         Optional<Rental> rental = rentalRepository.findById(id);
         if (rental.isEmpty()) {
             throw new RentalNotFoundException(id, "Rental not found");
         }
-        return rental.get();
+        Rental thisRental = rental.get();
+        return new RentalOutputDto(thisRental.getId(), thisRental.getVehicle().getId(), thisRental.getCustomer().getId(), thisRental.getStartDate(), thisRental.getEndDate(), thisRental.getTotalCost());
     }
 
     @Override
-    public List<Rental> getAllOngoingRental() {
+    public List<RentalOutputDto> getAllOngoingRental() {
         Calendar calendar = Calendar.getInstance();
         Date today = calendar.getTime();
-        List<Rental> ans = rentalRepository.findAllByStartDateLessThanEqualAndEndDateGreaterThanEqual(today,today);
-        return ans;
+        List<Rental> ongoingRentalList = rentalRepository.findAllByStartDateLessThanEqualAndEndDateGreaterThanEqual(today,today);
+        List<RentalOutputDto> rentalOutputDtoList = new java.util.ArrayList<>();
+        for(Rental rental: ongoingRentalList){
+            rentalOutputDtoList.add(new RentalOutputDto(rental.getId(), rental.getVehicle().getId(), rental.getCustomer().getId(), rental.getStartDate(), rental.getEndDate(), rental.getTotalCost()));
+        }
+        return rentalOutputDtoList;
     }
 
     @Override
-    public List<Rental> getRentalHistoryByCustomerId(Long customerId){
+    public List<RentalOutputDto> getRentalHistoryByCustomerId(Long customerId){
         Optional<Customer> optionalCustomer = customerRepository.findById(customerId);
 
         if(optionalCustomer.isEmpty()){
             throw new CustomerNotFoundException(customerId, "Customer not found");
         }
 
-        return rentalRepository.findByCustomerId(customerId);
+        List<Rental> rentalHistory = rentalRepository.findByCustomerId(customerId);
+        List<RentalOutputDto> rentalOutputDtoList = new ArrayList<>();
+        for(Rental rental: rentalHistory){
+            rentalOutputDtoList.add(new RentalOutputDto(rental.getId(), rental.getVehicle().getId(), rental.getCustomer().getId(), rental.getStartDate(), rental.getEndDate(), rental.getTotalCost()));
+        }
+        return rentalOutputDtoList;
     }
 
     @Override
-    public List<Rental> getRentalHistoryByVehicleId(Long vehicleId){
+    public List<RentalOutputDto> getRentalHistoryByVehicleId(Long vehicleId){
         Optional<Vehicle> optionalVehicle = vehicleRepository.findById(vehicleId);
 
         if(optionalVehicle.isEmpty()){
             throw new VehicleNotFoundException(vehicleId, "Vehicle not found");
         }
 
-        return rentalRepository.findByVehicleId(vehicleId);
+        List<Rental> rentalHistoryList = rentalRepository.findByVehicleId(vehicleId);
+        List<RentalOutputDto> rentalOutputDtoList = new ArrayList<>();
+        for(Rental rental: rentalHistoryList){
+            rentalOutputDtoList.add(new RentalOutputDto(rental.getId(), rental.getVehicle().getId(), rental.getCustomer().getId(), rental.getStartDate(), rental.getEndDate(), rental.getTotalCost()));
+        }
+        return rentalOutputDtoList;
     }
 
     @Override
-    public List<Rental> getReservationByVehicleId(Long id) {
+    public List<RentalOutputDto> getReservationByVehicleId(Long id) {
         Calendar calendar = Calendar.getInstance();
         Date today = calendar.getTime();
         Optional<Vehicle> vehicleOptional = vehicleRepository.findById(id);
         Vehicle vehicle = vehicleOptional.orElseThrow(() -> new VehicleNotFoundException(id, "Invalid Id"));
-        List<Rental> ans = rentalRepository.findAllByStartDateAfterAndVehicle(today,vehicle);
-        return ans;
+
+        List<Rental> reservationHistory = rentalRepository.findAllByStartDateAfterAndVehicle(today,vehicle);
+        List<RentalOutputDto> rentalOutputDtoList = new ArrayList<>();
+        for(Rental rental: reservationHistory){
+            rentalOutputDtoList.add(new RentalOutputDto(rental.getId(), rental.getVehicle().getId(), rental.getCustomer().getId(), rental.getStartDate(), rental.getEndDate(), rental.getTotalCost()));
+        }
+        return rentalOutputDtoList;
     }
 
     @Override
-    public List<Rental> getReservationByCustomerId(Long id) {
+    public List<RentalOutputDto> getReservationByCustomerId(Long id) {
         Calendar calender = Calendar.getInstance();
         Date today = calender.getTime();
         Optional<Customer> customerOptional = customerRepository.findById(id);
         Customer customer = customerOptional.orElseThrow(() -> new CustomerNotFoundException(id, "Invalid Id"));
-        List<Rental> ans = rentalRepository.findAllByStartDateAfterAndCustomer(today,customer);
-        return ans;
+
+        List<Rental> reservationList = rentalRepository.findAllByStartDateAfterAndCustomer(today,customer);
+        List<RentalOutputDto> rentalOutputDtoList = new ArrayList<>();
+        for(Rental rental: reservationList){
+            rentalOutputDtoList.add(new RentalOutputDto(rental.getId(), rental.getVehicle().getId(), rental.getCustomer().getId(), rental.getStartDate(), rental.getEndDate(), rental.getTotalCost()));
+        }
+        return rentalOutputDtoList;
     }
 
     @Override
     public Double getRentalCost(CostDto costDto) {
-        int b = 200;
+
         Long id = costDto.getId();
         Optional<Vehicle> vehicleOptional = vehicleRepository.findById(id);
 
-        Vehicle vehicle = vehicleOptional.orElseThrow(() -> new VehicleNotFoundException(id, "Invalid Id"));
+        if(vehicleOptional.isEmpty()){
+            throw new VehicleNotFoundException(id, "Vehicle not found");
+        }
 
+        Vehicle vehicle = vehicleOptional.get();
         Date startDate = costDto.getStartDate();
         Date endDate = costDto.getEndDate();
 
         LocalDate startLocalDate = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         LocalDate endLocalDate = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-        long numberOfDays = ChronoUnit.DAYS.between(startLocalDate, endLocalDate);
+        Long numberOfDays = ChronoUnit.DAYS.between(startLocalDate, endLocalDate);
 
-        Double cost = 0.0;
-        int a = 100;
+        Double cost = 0D;
+        Double twoWheelerPrice = 100D;
+        Double fourWheelerPrice = 200D;
 
         if (vehicle.getVehicleType().name().equals("TWO_WHEELER")) {
-            cost += numberOfDays * a;
+            cost += numberOfDays * twoWheelerPrice;
         } else {
-            cost += numberOfDays * b;
+            cost += numberOfDays * fourWheelerPrice;
         }
 
         return cost;
@@ -169,9 +195,12 @@ public class SelfRentalService implements RentalService{
 
 
     @Override
-    public Rental cancelRentalById(Long id) {
-        Rental rental = rentalRepository.getReferenceById(id);
+    public RentalOutputDto cancelRentalById(Long id) {
+        Optional<Rental> thisRental = rentalRepository.findById(id);
+        if(thisRental.isEmpty()){
+            throw new RentalNotFoundException(id, "Rental not found");
+        }
         rentalRepository.deleteById(id);
-        return rental;
+        return new RentalOutputDto(thisRental.get().getId(), thisRental.get().getVehicle().getId(), thisRental.get().getCustomer().getId(), thisRental.get().getStartDate(), thisRental.get().getEndDate(), thisRental.get().getTotalCost());
     }
 }

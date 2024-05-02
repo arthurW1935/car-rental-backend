@@ -9,12 +9,12 @@ import java.util.List;
 
 public interface RentalService {
     RentalOutputDto createRental(RentalDto rentalDto);
-    Rental getRentalById(Long id);
-    List<Rental> getAllOngoingRental();
-    List<Rental> getRentalHistoryByCustomerId(Long id);
-    List<Rental> getRentalHistoryByVehicleId(Long id);
-    List<Rental> getReservationByVehicleId(Long id);
-    List<Rental> getReservationByCustomerId(Long id);
+    RentalOutputDto getRentalById(Long id);
+    List<RentalOutputDto> getAllOngoingRental();
+    List<RentalOutputDto> getRentalHistoryByCustomerId(Long id);
+    List<RentalOutputDto> getRentalHistoryByVehicleId(Long id);
+    List<RentalOutputDto> getReservationByVehicleId(Long id);
+    List<RentalOutputDto> getReservationByCustomerId(Long id);
     Double getRentalCost(CostDto costDto);
-    Rental cancelRentalById(Long id);
+    RentalOutputDto cancelRentalById(Long id);
 }
