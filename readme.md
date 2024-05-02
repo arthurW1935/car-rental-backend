@@ -4,12 +4,12 @@
 In this project we have developed a comprehensive system for managing car rental operations, including vehicle records, customer information, rental transactions, and branch management. The system provides functionalities for creating, updating, retrieving, and deleting details about cars, customers, rentals, and branches.
 
 ## Authors
-* [@arthurW1935](https://github.com/arthurW1935/)
-* [@yashathwani](https://github.com/yashathwani)
-* [@TUSHAR1651](https://github.com/TUSHAR1651)
-* [@Souvik-Cyclic](https://github.com/Souvik-Cyclic)
-* [@aannaannyaaa](https://github.com/aannaannyaaa)
-* [@garvit420](https://github.com/garvit420)
+* [@arthurW1935](https://github.com/arthurW1935/) Sourashis
+* [@yashathwani](https://github.com/yashathwani) Yash
+* [@TUSHAR1651](https://github.com/TUSHAR1651) Tushar
+* [@Souvik-Cyclic](https://github.com/Souvik-Cyclic) Souvik
+* [@aannaannyaaa](https://github.com/aannaannyaaa) Ananya
+* [@garvit420](https://github.com/garvit420) Garvit
 
 ## Installation
 * Clone the repository to your local machine using the command ` git clone https://github.com/arthurW1935/car-rental-backend.git `.
