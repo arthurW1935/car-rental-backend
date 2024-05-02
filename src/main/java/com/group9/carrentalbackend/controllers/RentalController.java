@@ -5,8 +5,10 @@ import com.group9.carrentalbackend.dtos.RentalDto;
 import com.group9.carrentalbackend.dtos.RentalOutputDto;
 import com.group9.carrentalbackend.models.Rental;
 import com.group9.carrentalbackend.services.RentalService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -24,6 +26,10 @@ public class RentalController {
     @GetMapping("/{id}")
     public RentalOutputDto getRentalById(@PathVariable Long id){
         return rentalService.getRentalById(id);
+    }
+    @GetMapping("")
+    public List<RentalOutputDto> getAllRentals(){
+        return rentalService.getAllRentals();
     }
     @GetMapping("/ongoing")
     public List<RentalOutputDto> getAllOngoingRental() {
@@ -47,8 +53,11 @@ public class RentalController {
         return rentalService.getReservationByCustomerId(id);
     }
     @GetMapping("/cost")
-    public Double getRentalCost(CostDto costDto){
-        return rentalService.getRentalCost(costDto);
+    public Double getRentalCost(
+            @RequestParam Long vehicleId,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        return rentalService.getRentalCost(vehicleId, startDate, endDate);
     }
     @DeleteMapping("/{id}")
     public RentalOutputDto cancelRentalById(@PathVariable Long id){
