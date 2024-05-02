@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -81,6 +82,10 @@ public class SelfBranchService implements BranchService {
             Optional<Employee> manager = employeeRepository.findById(branch.getManager().getId());
             if(manager.isEmpty()){
                 throw new EmployeeNotFoundException(branch.getManager().getId(), "Employee not found");
+            }
+            Optional<Branch> managerBranch = branchRepository.findByManagerId(branch.getId());
+            if(managerBranch.isPresent() && !Objects.equals(managerBranch.get().getId(), branch.getId())){
+                throw new BranchNotFoundException(branch.getId(), "Employee is already a manager of another branch");
             }
             branch.setManager(manager.get());
         }
