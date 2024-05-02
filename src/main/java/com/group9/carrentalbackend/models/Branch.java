@@ -17,8 +17,7 @@ public class Branch {
     private Long id;
     private String location;
 
-//    @Basic(fetch = FetchType.LAZY)
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     private Employee manager;
     private String phoneNumber;
     private String email;
