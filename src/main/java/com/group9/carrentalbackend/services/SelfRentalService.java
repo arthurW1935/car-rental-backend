@@ -54,9 +54,8 @@ public class SelfRentalService implements RentalService{
             throw new RentalNotAvailableException(rentalDto.getVehicleId(), startDate, endDate, "Vehicle not available for rental");
         }
 
-        CostDto costDto = new CostDto(rentalDto.getVehicleId(), startDate, endDate);
 
-        Double totalCost = getRentalCost(costDto);
+        Double totalCost = getRentalCost(rentalDto.getVehicleId(), startDate, endDate);
 
         Rental rental = new Rental(rentalDto.getId(), optionalVehicle.get(), optionalCustomer.get(), startDate, endDate, totalCost);
         Rental savedRental = rentalRepository.save(rental);
@@ -84,6 +83,16 @@ public class SelfRentalService implements RentalService{
         }
         Rental thisRental = rental.get();
         return new RentalOutputDto(thisRental.getId(), thisRental.getVehicle().getId(), thisRental.getCustomer().getId(), thisRental.getStartDate(), thisRental.getEndDate(), thisRental.getTotalCost());
+    }
+
+    @Override
+    public List<RentalOutputDto> getAllRentals(){
+        List<Rental> rentalList = rentalRepository.findAll();
+        List<RentalOutputDto> rentalOutputDtoList = new ArrayList<>();
+        for(Rental rental: rentalList){
+            rentalOutputDtoList.add(new RentalOutputDto(rental.getId(), rental.getVehicle().getId(), rental.getCustomer().getId(), rental.getStartDate(), rental.getEndDate(), rental.getTotalCost()));
+        }
+        return rentalOutputDtoList;
     }
 
     @Override
@@ -161,18 +170,15 @@ public class SelfRentalService implements RentalService{
     }
 
     @Override
-    public Double getRentalCost(CostDto costDto) {
+    public Double getRentalCost(Long vehicleId, Date startDate, Date endDate) {
 
-        Long id = costDto.getId();
-        Optional<Vehicle> vehicleOptional = vehicleRepository.findById(id);
+        Optional<Vehicle> vehicleOptional = vehicleRepository.findById(vehicleId);
 
         if(vehicleOptional.isEmpty()){
-            throw new VehicleNotFoundException(id, "Vehicle not found");
+            throw new VehicleNotFoundException(vehicleId, "Vehicle not found");
         }
 
         Vehicle vehicle = vehicleOptional.get();
-        Date startDate = costDto.getStartDate();
-        Date endDate = costDto.getEndDate();
 
         LocalDate startLocalDate = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         LocalDate endLocalDate = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
