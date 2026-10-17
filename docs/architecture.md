@@ -9,6 +9,7 @@
 | Argo CD | `argocd` namespace | Keeps the cluster equal to git (`helm/car-rental` + `deploy/values-kind.yaml`) |
 | Prometheus, Alertmanager, Grafana | `monitoring` namespace | Metrics, SLO alerts, dashboard |
 | Jaeger v2 | `monitoring` namespace | Receives OTLP traces, trace UI |
+| Loki (single binary) + Grafana Alloy | `monitoring` namespace | Alloy tails every pod's stdout via the Kubernetes API and ships it to Loki. App lines get a `level` label and `trace_id`/`span_id` metadata |
 
 ## Request path
 
@@ -25,6 +26,10 @@ flowchart LR
     PR -.-> P2
     G[Grafana] --> PR
     G --> J
+    A[Alloy] -. tail stdout via K8s API .-> P1
+    A -.-> P2
+    A --> LK[(Loki)]
+    G --> LK
 ```
 
 - The Service only sends traffic to **ready** pods. Readiness includes a DB check, so if MySQL is down the pods drop out of the Service instead of returning errors, and liveness does not restart them (a restart would not fix the DB).

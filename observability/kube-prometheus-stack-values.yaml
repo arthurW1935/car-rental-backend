@@ -106,8 +106,30 @@ grafana:
     dashboards:
       enabled: true
       searchNamespace: ALL   # load dashboards shipped by app charts
+  # Logs <-> traces in both directions. "$$" escapes "$" in Grafana provisioning files.
   additionalDataSources:
+    - name: Loki
+      type: loki
+      uid: loki
+      url: http://loki.monitoring:3100
+      jsonData:
+        derivedFields:
+          # Every app log line carries trace_id (structured metadata) -> "View trace" button
+          - name: TraceID
+            matcherType: label
+            matcherRegex: trace_id
+            datasourceUid: jaeger
+            url: "$${__value.raw}"
+            urlDisplayLabel: View trace
     - name: Jaeger
       type: jaeger
       uid: jaeger
       url: http://jaeger.monitoring:16686
+      jsonData:
+        # From a span -> "Logs for this span": the app log lines with the same trace id
+        tracesToLogsV2:
+          datasourceUid: loki
+          spanStartTimeShift: "-5m"
+          spanEndTimeShift: "5m"
+          customQuery: true
+          query: '{app="car-rental-backend"} | trace_id="$${__trace.traceId}"'

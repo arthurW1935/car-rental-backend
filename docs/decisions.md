@@ -17,7 +17,9 @@
 | Security checks | gitleaks, Trivy (fail on fixable HIGH/CRITICAL), SHA-pinned actions, PSA `restricted`, NetworkPolicies | Covers source, dependencies, image, CI supply chain and runtime | Image signing (cosign) + admission policy (Kyverno) as the next step |
 | Metrics | Micrometer → Prometheus, kube-prometheus-stack | Standard Kubernetes stack, Spring support built in | Managed Prometheus in the cloud |
 | Tracing | OpenTelemetry (OTLP) → Jaeger v2 | Vendor-neutral standard; JDBC spans show DB time | Grafana Tempo if already on the Grafana stack |
-| Logs | stdout + `kubectl logs`, trace id in each line | Laptop memory; correlation by trace id still works | Loki + Alloy for search across pods and history |
+| Logs | stdout → Grafana Alloy → Loki (single binary, filesystem, 72h) | Search across pods and releases in Grafana; logs survive pod restarts | Loki simple-scalable mode on object storage (S3/GCS) for production volume |
+| Log collector | Alloy as one Deployment tailing logs through the Kubernetes API | No hostPath mounts or privileged DaemonSet; Promtail is end-of-life | DaemonSet reading `/var/log/pods` on each node for high log volume (the API path doesn't scale to big clusters) |
+| Logs ↔ traces | `trace_id` kept as Loki structured metadata; Grafana links log → trace and span → logs | One click from an error line to its trace and back; trace ids are unique, so labels would explode Loki's index | Exemplars on metrics for metric → trace |
 | Tests in CI | H2 in MySQL mode | Fast, no DB service | Testcontainers MySQL for exact production parity |
 | Alert delivery | Alertmanager → webhook receiver in the cluster; routes by `service` + `severity`; resolved messages on | No external account needed; same routing as a real setup | Slack (warning) + PagerDuty (critical) receivers; only the receiver URLs change |
 | Alert noise | Inhibit symptom alerts while MySQL is down (`for` ordering + `keep_firing_for`); kind-only clock alerts disabled | One outage = one page, about the cause | Per-team routing trees and silences during maintenance |

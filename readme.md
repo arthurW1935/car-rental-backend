@@ -33,7 +33,7 @@ Tested with kind 0.33, Helm 4.3, kubectl 1.36 on macOS (Apple Silicon).
 ```bash
 kind create cluster --config kind/cluster.yaml   # 1 control plane + 2 workers
 ./scripts/bootstrap.sh                           # namespace (Pod Security "restricted") + random DB passwords
-./scripts/install-observability.sh               # Prometheus, Alertmanager, Grafana, Jaeger
+./scripts/install-observability.sh               # Prometheus, Alertmanager, Grafana, Jaeger, Loki, Alloy
 ./scripts/install-argocd.sh                      # Argo CD + the car-rental Application
 ```
 
@@ -55,6 +55,7 @@ curl localhost:8080/actuator/info                 # app.version = git commit SHA
 | Prometheus | `kubectl -n monitoring port-forward svc/monitoring-kube-prometheus-prometheus 9090`, then http://localhost:9090/alerts | none |
 | Alertmanager | `kubectl -n monitoring port-forward svc/monitoring-kube-prometheus-alertmanager 9093`, then http://localhost:9093 | none |
 | Delivered alerts | `kubectl -n monitoring logs deploy/alert-receiver -f` (stands in for Slack/PagerDuty) | none |
+| Logs (Loki) | Grafana → Explore → **Loki**, e.g. `{app="car-rental-backend"}`. Open a line, then **View trace** to jump to Jaeger. | `admin` |
 
 ### How a change is delivered
 
@@ -69,7 +70,7 @@ More detail: [architecture](docs/architecture.md), [decisions and trade-offs](do
 
 - Single MySQL replica with no backups. Losing the PVC loses the data.
 - Argo CD tracks the `devops` (PR) branch until the PR is merged.
-- Jaeger keeps traces in memory, so they are lost when it restarts. There is no central log store (Loki); use `kubectl logs` and search by trace id.
+- Jaeger keeps traces in memory, so they are lost when it restarts. Loki keeps logs for 72 h on a 2Gi volume, with a single replica.
 - Two Spring Framework CVEs are accepted in `.trivyignore`. They are fixed only in Spring 7, and the code paths they affect (XsltView, SSE) are not used here.
 - A GitHub runner cannot reach the laptop, which is why delivery is pull-based through Argo CD.
 
@@ -137,7 +138,7 @@ More detail: [architecture](docs/architecture.md), [decisions and trade-offs](do
 
 #### Technologies Used
 Spring Boot, MySQL, Docker, Kubernetes (kind), Helm, GitHub Actions, Argo CD,
-Prometheus, Grafana, OpenTelemetry, Jaeger, Trivy, gitleaks
+Prometheus, Alertmanager, Grafana, Loki, Alloy, OpenTelemetry, Jaeger, Trivy, gitleaks
 
 ##### The Vehicle Status includes the following:
 * Status of the vehicle, such as whether it is AVAILABLE, already RENTED, or out for MAINTENANCE.

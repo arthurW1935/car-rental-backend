@@ -9,6 +9,21 @@ All output below is from this project's kind cluster, captured on 2026-10-17.
 - `scripts/user-journey.sh` prints `JOURNEY OK`. That means a real user can register, add a vehicle, get a quote, book, and see the booking.
 - Dashboard: availability ≥ 99% and p95 < 500 ms. None of the `CarRental*` alerts is firing.
 
+## Logs → traces → logs
+
+Every app log line looks like `... INFO [thread] [trace=<id> span=<id>] logger - message`. Alloy parses it: `level` becomes a Loki label, and `trace_id`/`span_id` become structured metadata (not labels, because each request has its own id).
+
+Verified through Grafana:
+
+```
+1. Loki (via Grafana) log line -> trace_id=6f8b52d02d30bc11d257bd59af706d8b
+2. Grafana -> Jaeger proxy: 4 spans, root=http post /customers         (the "View trace" button)
+3. tracesToLogs query (Loki) for that trace -> 1 matching line:        (the "Logs for this span" button)
+   2026-10-17T11:23:57.757Z INFO [http-nio-8080-exec-4] [trace=6f8b52d0... span=34f57dd5...] c.g.c.controllers.CustomerController ...
+```
+
+Useful queries: `{app="car-rental-backend", level=~"WARN|ERROR"}`, `{app="car-rental-backend", version="<sha>"}` (one release), `{namespace="car-rental", container="mysql"}`.
+
 ## Fault demo 1: MySQL pod lost
 
 - **Symptom expected:** requests that need the DB fail while MySQL restarts.

@@ -441,6 +441,100 @@
           "legendFormat": "{{pod}}"
         }
       ]
+    },
+    {
+      "id": 13,
+      "type": "timeseries",
+      "title": "Log lines per level (app)",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 36,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "expr": "sum by (level) (count_over_time({app=\"car-rental-backend\", container=\"app\"}[1m]))",
+          "legendFormat": "{{level}}"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "type": "logs",
+      "title": "App logs: WARN / ERROR (click a line, then View trace)",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 36,
+        "w": 12,
+        "h": 8
+      },
+      "options": {
+        "showTime": true,
+        "wrapLogMessage": true,
+        "sortOrder": "Descending",
+        "enableLogDetails": true
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "expr": "{app=\"car-rental-backend\", container=\"app\", level=~\"WARN|ERROR\"}"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "type": "logs",
+      "title": "All app logs",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 44,
+        "w": 24,
+        "h": 10
+      },
+      "options": {
+        "showTime": true,
+        "wrapLogMessage": true,
+        "sortOrder": "Descending",
+        "enableLogDetails": true
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "expr": "{app=\"car-rental-backend\", container=\"app\"}"
+        }
+      ]
     }
   ]
 }
