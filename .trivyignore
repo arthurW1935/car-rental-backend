@@ -1,0 +1,8 @@
+# Accepted risks. Each entry: why it does not apply here, and when to re-check.
+# Fixed only in Spring Framework 7.0.9 (Spring Boot 4); no open-source 6.2.x fix exists.
+
+# XsltView RCE: the app is a JSON REST API and never uses XsltView or view rendering.
+CVE-2026-47884 exp:2027-01-31
+
+# SSE stream corruption with view fragments: the app has no Server-Sent Events endpoints.
+CVE-2026-47890 exp:2027-01-31
