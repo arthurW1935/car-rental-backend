@@ -1,0 +1,29 @@
+# Argo CD Application: the cluster continuously matches the chart + kind values in git.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: car-rental
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/arthurW1935/car-rental-backend.git
+    targetRevision: devops   # the PR branch while under review; main after merge
+    path: helm/car-rental
+    helm:
+      releaseName: car-rental
+      valueFiles:
+        - values.yaml
+        - ../../deploy/values-kind.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: car-rental
+  syncPolicy:
+    automated:
+      prune: true      # delete resources removed from git
+      selfHeal: true   # undo manual changes made with kubectl (drift)
+    syncOptions:
+      - CreateNamespace=false   # namespace + secret come from scripts/bootstrap.sh
+    retry:
+      limit: 5
+      backoff: { duration: 10s, factor: 2, maxDuration: 3m }

@@ -125,3 +125,28 @@ jobs:
       - name: Push image
         if: github.event_name != 'pull_request'
         run: docker push "$IMAGE:$GITHUB_SHA"
+
+  # CD (GitOps): record the new image tag in git. Argo CD in the cluster pulls it and syncs.
+  # The "kind" environment requires a manual approval before this job runs.
+  deploy:
+    name: Deploy (bump image tag for Argo CD)
+    needs: image
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment:
+      name: kind
+    permissions:
+      contents: write   # commit the tag bump
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: ${{ github.ref_name }}
+      - name: Set image.tag in deploy/values-kind.yaml
+        run: sed -i -E "s|^(  tag:).*|\1 ${GITHUB_SHA}|" deploy/values-kind.yaml && cat deploy/values-kind.yaml
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "deploy: car-rental ${GITHUB_SHA::7} to kind [skip ci]"
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
