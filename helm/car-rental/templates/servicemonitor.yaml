@@ -1,0 +1,15 @@
+{{- if .Values.serviceMonitor.enabled }}
+# Tells Prometheus (operator) to scrape /actuator/prometheus on every app pod.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Release.Name }}-app
+  labels: {{- include "car-rental.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels: {{- include "car-rental.app.selector" . | nindent 6 }}
+  endpoints:
+    - port: http
+      path: /actuator/prometheus
+      interval: {{ .Values.serviceMonitor.interval }}
+{{- end }}

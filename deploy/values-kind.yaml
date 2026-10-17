@@ -2,3 +2,12 @@
 # image.tag is updated by CI after an approved deploy: this file is the record of what runs.
 image:
   tag: e4c23246ba6d0acb07e506a2896a2997337de31c
+
+serviceMonitor:
+  enabled: true
+prometheusRule:
+  enabled: true
+grafanaDashboard:
+  enabled: true
+tracing:
+  otlpEndpoint: http://jaeger.monitoring:4318/v1/traces

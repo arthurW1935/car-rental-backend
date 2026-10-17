@@ -1,0 +1,43 @@
+# kube-prometheus-stack for the local kind cluster: Prometheus, Alertmanager, Grafana,
+# kube-state-metrics, node-exporter.
+
+# kind does not expose these control-plane components to scraping; disabling avoids
+# permanently-firing "target down" alerts that would train us to ignore alerts.
+kubeEtcd: { enabled: false }
+kubeControllerManager: { enabled: false }
+kubeScheduler: { enabled: false }
+kubeProxy: { enabled: false }
+
+prometheus:
+  prometheusSpec:
+    # Pick up ServiceMonitors/PrometheusRules from any namespace (our app ships its own).
+    serviceMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+    retention: 3d
+    resources:
+      requests: { cpu: 100m, memory: 400Mi }
+      limits: { memory: 1Gi }
+
+alertmanager:
+  alertmanagerSpec:
+    resources:
+      requests: { cpu: 10m, memory: 32Mi }
+      limits: { memory: 128Mi }
+
+grafana:
+  admin:
+    existingSecret: grafana-admin   # created by scripts/install-observability.sh, not in git
+    userKey: admin-user
+    passwordKey: admin-password
+  service:
+    type: NodePort
+    nodePort: 30300   # -> http://localhost:3000
+  sidecar:
+    dashboards:
+      enabled: true
+      searchNamespace: ALL   # load dashboards shipped by app charts
+  additionalDataSources:
+    - name: Jaeger
+      type: jaeger
+      uid: jaeger
+      url: http://jaeger.monitoring:16686

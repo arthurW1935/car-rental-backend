@@ -40,5 +40,15 @@ networkPolicy:
   # Namespaces allowed to scrape /actuator/prometheus
   monitoringNamespace: monitoring
 
+# Observability (needs kube-prometheus-stack CRDs, so off by default; on in deploy/values-kind.yaml)
 serviceMonitor:
   enabled: false
+  interval: 15s
+prometheusRule:
+  enabled: false
+grafanaDashboard:
+  enabled: false
+
+tracing:
+  # OTLP/HTTP traces endpoint, e.g. http://jaeger.monitoring:4318/v1/traces. Empty = no export.
+  otlpEndpoint: ""
