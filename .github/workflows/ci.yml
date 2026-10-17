@@ -108,8 +108,7 @@ jobs:
             --set image.tag="$GITHUB_SHA" --set app.service.type=ClusterIP --wait --timeout 5m
           kubectl -n car-rental port-forward svc/car-rental-app 8080:80 &
           sleep 5
-          curl -sf -XPOST localhost:8080/customers -H 'content-type: application/json' \
-            -d '{"name":"CI","phone":"1","mail":"ci@example.com","address":"runner"}'
+          ./scripts/user-journey.sh http://localhost:8080
           curl -sf localhost:8080/actuator/info | tee /dev/stderr | grep -q "$GITHUB_SHA"
       - name: Dump cluster state on failure
         if: failure()

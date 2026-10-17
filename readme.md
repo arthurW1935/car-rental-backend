@@ -11,14 +11,71 @@ In this project we have developed a comprehensive system for managing car rental
 * [@aannaannyaaa](https://github.com/aannaannyaaa) Ananya
 * [@garvit420](https://github.com/garvit420) Garvit
 
-## Installation
-* Clone the repository to your local machine using the command ` git clone https://github.com/arthurW1935/car-rental-backend.git `.
-* We recommend installing an IDE for this project. We used [IntelliJ](https://www.jetbrains.com/idea/).
-* Install [Docker](https://www.docker.com/products/docker-desktop/) and set it up as per your operating system.
-* Docker Installation Guide [Windows](https://youtu.be/WDEdRmTCSs8), [Linux](https://youtu.be/5_EA3rBCXmU), [Mac](https://youtu.be/-EXlfSsP49A).
-* After installing Docker, ensure it is running. Then, navigate to your project directory and run the command `docker compose up` in the terminal. If you encounter any errors, check the `docker-compose.yml` file in the project directory for conflicting port usage.
-* We recommend installing [Postman](https://www.postman.com/downloads/) for testing api calls.
-* Now, finally run the `CarRentalBackendApplication` present in your project directory to start the project.
+## Running it
+
+There are two ways to run it. Both read credentials from places that are not in git.
+
+### Option A: Docker Compose (quick local run)
+
+Prerequisites: Docker.
+
+```bash
+cp .env.example .env        # then set your own passwords in .env
+docker compose up --build
+curl localhost:8080/actuator/health
+```
+
+### Option B: Kubernetes (kind) with Argo CD, Prometheus, Grafana and Jaeger
+
+Prerequisites: Docker (about 6 GB of memory for Docker), `kind`, `kubectl`, `helm`, `jq`.
+Tested with kind 0.33, Helm 4.3, kubectl 1.36 on macOS (Apple Silicon).
+
+```bash
+kind create cluster --config kind/cluster.yaml   # 1 control plane + 2 workers
+./scripts/bootstrap.sh                           # namespace (Pod Security "restricted") + random DB passwords
+./scripts/install-observability.sh               # Prometheus, Alertmanager, Grafana, Jaeger
+./scripts/install-argocd.sh                      # Argo CD + the car-rental Application
+```
+
+Argo CD then deploys the chart from the `devops` branch, using the image tag in
+`deploy/values-kind.yaml`. Check it and run a real user flow:
+
+```bash
+kubectl -n argocd get application car-rental      # expect Synced / Healthy
+./scripts/user-journey.sh                         # register -> add vehicle -> quote -> book -> verify
+curl localhost:8080/actuator/info                 # app.version = git commit SHA that is running
+```
+
+| What | Where | Login |
+|---|---|---|
+| API | http://localhost:8080 | none |
+| Argo CD | https://localhost:8443 (self-signed certificate) | `admin` / `kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' \| base64 -d` |
+| Grafana | http://localhost:3000, dashboard "Car Rental Backend" | `admin` / `kubectl -n monitoring get secret grafana-admin -o jsonpath='{.data.admin-password}' \| base64 -d` |
+| Jaeger | `kubectl -n monitoring port-forward svc/jaeger 16686`, then http://localhost:16686 (also a Grafana datasource) | none |
+| Prometheus | `kubectl -n monitoring port-forward svc/monitoring-kube-prometheus-prometheus 9090` | none |
+
+### How a change is delivered
+
+1. Push to `devops` (or `main`). GitHub Actions runs the tests, gitleaks, Helm lint, the image build tagged with the commit SHA, a Trivy scan, a smoke test on a temporary kind cluster, and the push to GHCR.
+2. The **Deploy** job waits for manual approval (GitHub environment `kind`).
+3. Once approved, it commits the new SHA to `deploy/values-kind.yaml`. Argo CD picks it up within about 60 s and does a rolling update.
+4. **Rollback:** `git revert <deploy commit>` and push. Argo CD syncs the previous SHA.
+
+More detail: [architecture](docs/architecture.md), [decisions and trade-offs](docs/decisions.md), [operations and evidence](docs/operations.md).
+
+### Known limitations
+
+- Single MySQL replica with no backups. Losing the PVC loses the data.
+- Argo CD tracks the `devops` (PR) branch until the PR is merged.
+- Jaeger keeps traces in memory, so they are lost when it restarts. There is no central log store (Loki); use `kubectl logs` and search by trace id.
+- Two Spring Framework CVEs are accepted in `.trivyignore`. They are fixed only in Spring 7, and the code paths they affect (XsltView, SSE) are not used here.
+- A GitHub runner cannot reach the laptop, which is why delivery is pull-based through Argo CD.
+
+### Running the tests
+
+```bash
+./mvnw verify      # JDK 17; uses in-memory H2, no database needed
+```
 
 ## Documentation
 
@@ -77,11 +134,8 @@ In this project we have developed a comprehensive system for managing car rental
 * Vehicle Status
 
 #### Technologies Used
-Spring Boot
-MySQL
-Docker
-Postman
-IntelliJ IDEA
+Spring Boot, MySQL, Docker, Kubernetes (kind), Helm, GitHub Actions, Argo CD,
+Prometheus, Grafana, OpenTelemetry, Jaeger, Trivy, gitleaks
 
 ##### The Vehicle Status includes the following:
 * Status of the vehicle, such as whether it is AVAILABLE, already RENTED, or out for MAINTENANCE.
