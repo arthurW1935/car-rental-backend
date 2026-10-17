@@ -1,26 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <!-- Console appender -->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <!-- Console only: containers log to stdout and Kubernetes collects it -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level [%thread] [trace=%X{traceId:-} span=%X{spanId:-}] %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-
-    <!-- File appender -->
-    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>logs/controllers.log</file> <!-- Path to the log file -->
-        <append>true</append>
-        <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
-    </appender>
-
-    <!-- Loggers -->
-    <logger name="com.group9.carrentalbackend.controllers" level="INFO">
-        <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="FILE"/> <!-- Attach the file appender to this logger -->
-    </logger>
 
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
