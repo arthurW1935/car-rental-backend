@@ -1,0 +1,42 @@
+{{- if .Values.networkPolicy.enabled }}
+# Default deny all ingress in the namespace; then open only what is needed.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-default-deny
+  labels: {{- include "car-rental.labels" . | nindent 4 }}
+spec:
+  podSelector: {}
+  policyTypes: ["Ingress"]
+---
+# App: reachable by users on 8080 (via the Service) and by Prometheus for metrics.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-app-ingress
+  labels: {{- include "car-rental.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels: {{- include "car-rental.app.selector" . | nindent 6 }}
+  policyTypes: ["Ingress"]
+  ingress:
+    - ports:
+        - port: {{ .Values.app.port }}
+---
+# MySQL: only the app pods may connect.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-mysql-ingress
+  labels: {{- include "car-rental.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels: {{- include "car-rental.mysql.selector" . | nindent 6 }}
+  policyTypes: ["Ingress"]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels: {{- include "car-rental.app.selector" . | nindent 14 }}
+      ports:
+        - port: 3306
+{{- end }}

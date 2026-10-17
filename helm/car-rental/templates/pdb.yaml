@@ -1,0 +1,10 @@
+# Keep at least one app pod during voluntary disruptions (node drain, cluster upgrade).
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Release.Name }}-app
+  labels: {{- include "car-rental.labels" . | nindent 4 }}
+spec:
+  minAvailable: {{ .Values.podDisruptionBudget.minAvailable }}
+  selector:
+    matchLabels: {{- include "car-rental.app.selector" . | nindent 6 }}

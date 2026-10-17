@@ -1,0 +1,6 @@
+apiVersion: v2
+name: car-rental
+description: Car rental backend (Spring Boot) with its MySQL database
+type: application
+version: 0.1.0
+appVersion: "0.0.1"
