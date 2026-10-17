@@ -1,7 +1,7 @@
 # Environment overrides for the local kind cluster (used by Argo CD).
 # image.tag is updated by CI after an approved deploy: this file is the record of what runs.
 image:
-  tag: 75ac3a663c8af6067381273a52106a4b444a3895
+  tag: 73444ed8cd0355ef5bf6adedefca7defae6dab0c
 
 serviceMonitor:
   enabled: true
