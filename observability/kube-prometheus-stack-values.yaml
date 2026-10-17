@@ -8,6 +8,13 @@ kubeControllerManager: { enabled: false }
 kubeScheduler: { enabled: false }
 kubeProxy: { enabled: false }
 
+# kind nodes share the Docker VM's clock, which never reports "synchronised" via timex,
+# so these fire permanently on a laptop. Real nodes run NTP and should keep them.
+defaultRules:
+  disabled:
+    NodeClockNotSynchronising: true
+    NodeClockSkewDetected: true
+
 prometheus:
   prometheusSpec:
     # Pick up ServiceMonitors/PrometheusRules from any namespace (our app ships its own).
@@ -19,6 +26,69 @@ prometheus:
       limits: { memory: 1Gi }
 
 alertmanager:
+  # Routing: app alerts (label team=car-rental, set on our PrometheusRule) go to their own channel, split by
+  # severity; everything else (cluster alerts) goes to a platform channel.
+  # All receivers are webhooks to the in-cluster alert-receiver (observability/alert-receiver.yaml);
+  # on a real team these would be PagerDuty (critical) and Slack (warning).
+  config:
+    global:
+      resolve_timeout: 5m
+    route:
+      receiver: platform
+      group_by: [alertname, namespace]
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 12h
+      routes:
+        # Watchdog always fires to prove the pipeline works; in production it goes to a
+        # dead-man's-switch service. Locally we drop it.
+        - receiver: "null"
+          matchers: ['alertname = "Watchdog"']
+        - receiver: "null"
+          matchers: ['alertname = "InfoInhibitor"']
+        - receiver: car-rental-critical
+          matchers: ['team = "car-rental"', 'severity = "critical"']
+          group_by: [alertname]
+          group_wait: 10s      # users are affected: notify fast
+          group_interval: 1m   # send updates (incl. "resolved") quickly
+          repeat_interval: 1h  # and keep reminding until fixed
+        - receiver: car-rental-warning
+          matchers: ['team = "car-rental"']
+          group_by: [alertname]
+          repeat_interval: 4h
+    inhibit_rules:
+      # Root cause beats symptoms: if MySQL is down, don't also page for the app effects.
+      - source_matchers: ['alertname = "CarRentalDatabaseDown"']
+        target_matchers: ['alertname =~ "CarRentalNoReadyPods|CarRentalDegraded|CarRentalHighErrorRate|CarRentalHighLatency"']
+        equal: [team]
+      # If no pod is ready, "degraded"/latency/error alerts add nothing.
+      - source_matchers: ['alertname = "CarRentalNoReadyPods"']
+        target_matchers: ['alertname =~ "CarRentalDegraded|CarRentalHighErrorRate|CarRentalHighLatency"']
+        equal: [team]
+      # Chart defaults: a critical alert mutes the warning/info version of the same alert.
+      - source_matchers: ['severity = "critical"']
+        target_matchers: ['severity =~ "warning|info"']
+        equal: [namespace, alertname]
+      - source_matchers: ['severity = "warning"']
+        target_matchers: ['severity = "info"']
+        equal: [namespace, alertname]
+      - source_matchers: ['alertname = "InfoInhibitor"']
+        target_matchers: ['severity = "info"']
+        equal: [namespace]
+    receivers:
+      - name: "null"
+      - name: car-rental-critical
+        webhook_configs:
+          - url: http://alert-receiver.monitoring:8080/car-rental-critical
+            send_resolved: true
+      - name: car-rental-warning
+        webhook_configs:
+          - url: http://alert-receiver.monitoring:8080/car-rental-warning
+            send_resolved: true
+      - name: platform
+        webhook_configs:
+          - url: http://alert-receiver.monitoring:8080/platform
+            send_resolved: true
   alertmanagerSpec:
     resources:
       requests: { cpu: 10m, memory: 32Mi }

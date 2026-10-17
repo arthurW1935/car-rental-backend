@@ -42,6 +42,38 @@ Argo CD reverted to replicas=2
 
 Self-heal is on, so a manual change in the cluster is overwritten by what git says.
 
+## Fault demo 3: alerting, from outage to page to resolved
+
+Alertmanager routes alerts carrying `team=car-rental` to the `car-rental-critical` and `car-rental-warning` receivers (split by severity). Everything else goes to `platform`. The receiver is a webhook running in the cluster; to see what it got, run `kubectl -n monitoring logs deploy/alert-receiver`. In a real team, these would be PagerDuty and Slack.
+
+Drill: take MySQL down. The goal is **one page about the root cause, not a storm of symptom alerts**. Argo CD auto-sync was paused during the drill so self-heal wouldn't undo the outage.
+
+```
+== 09:07:09 FAULT: scale MySQL StatefulSet to 0
+== 09:08:46 CarRentalDatabaseDown delivered
+== 09:09:37 CarRentalNoReadyPods is active in Prometheus but suppressed in Alertmanager
+== 09:09:37 user impact: GET /customers -> 000
+   CarRentalNoReadyPods  team=car-rental  severity=critical  state=suppressed
+   CarRentalDatabaseDown  team=car-rental  severity=critical  state=active
+== 09:09:37 RECOVER: scale MySQL back to 1
+== 09:09:46 app pods ready 2/2
+== 09:12:49 CarRentalDatabaseDown resolved (kept firing 2m after recovery)
+== 09:14:19 journey: JOURNEY OK
+== 09:14:19 CarRental alerts still active: 0
+
+What the on-call channel received:
+[car-rental-critical] FIRING   critical CarRentalDatabaseDown | MySQL is not ready | runbook: kubectl -n car-rental logs car-rental-mysql-0; ...
+[car-rental-critical] RESOLVED critical CarRentalDatabaseDown | MySQL is not ready | ...
+```
+
+Getting to one page took three fixes, each found by running the drill:
+
+1. **Ordering race.** `NoReadyPods` and `DatabaseDown` both had `for: 1m`, so they became active in the same evaluation and the symptom was sent before the inhibition applied. Fix: give the symptom a longer `for` (2m) than the cause (1m).
+2. **Recovery tail.** MySQL-down resolved before Prometheus saw the app pods ready again (scrape plus evaluation lag). That lifted the inhibition and the symptom fired after the outage was over. Fix: `keep_firing_for: 2m` on `DatabaseDown`. The cost is that "resolved" arrives about 2 minutes late.
+3. **Label collision.** Routing on `service=car-rental` overwrote the `service` label that kube-state-metrics alerts already carry, and it was fragile. Fix: a dedicated `team` label.
+
+The kind-only `NodeClockNotSynchronising` and `NodeClockSkewDetected` rules are disabled. kind nodes share the Docker VM clock, so these fire permanently and only teach people to ignore alerts.
+
 ## Rollback procedure (bad release)
 
 1. Find the deploy commit: `git log --oneline -- deploy/values-kind.yaml`

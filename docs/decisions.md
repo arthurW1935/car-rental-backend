@@ -19,4 +19,6 @@
 | Tracing | OpenTelemetry (OTLP) → Jaeger v2 | Vendor-neutral standard; JDBC spans show DB time | Grafana Tempo if already on the Grafana stack |
 | Logs | stdout + `kubectl logs`, trace id in each line | Laptop memory; correlation by trace id still works | Loki + Alloy for search across pods and history |
 | Tests in CI | H2 in MySQL mode | Fast, no DB service | Testcontainers MySQL for exact production parity |
+| Alert delivery | Alertmanager → webhook receiver in the cluster; routes by `service` + `severity`; resolved messages on | No external account needed; same routing as a real setup | Slack (warning) + PagerDuty (critical) receivers; only the receiver URLs change |
+| Alert noise | Inhibit symptom alerts while MySQL is down (`for` ordering + `keep_firing_for`); kind-only clock alerts disabled | One outage = one page, about the cause | Per-team routing trees and silences during maintenance |
 | SLO | 99% non-5xx, p95 < 500 ms, health checks excluded | Reflects what users feel | Multi-window burn-rate alerts with more traffic |

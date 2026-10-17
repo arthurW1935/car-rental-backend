@@ -52,7 +52,9 @@ curl localhost:8080/actuator/info                 # app.version = git commit SHA
 | Argo CD | https://localhost:8443 (self-signed certificate) | `admin` / `kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' \| base64 -d` |
 | Grafana | http://localhost:3000, dashboard "Car Rental Backend" | `admin` / `kubectl -n monitoring get secret grafana-admin -o jsonpath='{.data.admin-password}' \| base64 -d` |
 | Jaeger | `kubectl -n monitoring port-forward svc/jaeger 16686`, then http://localhost:16686 (also a Grafana datasource) | none |
-| Prometheus | `kubectl -n monitoring port-forward svc/monitoring-kube-prometheus-prometheus 9090` | none |
+| Prometheus | `kubectl -n monitoring port-forward svc/monitoring-kube-prometheus-prometheus 9090`, then http://localhost:9090/alerts | none |
+| Alertmanager | `kubectl -n monitoring port-forward svc/monitoring-kube-prometheus-alertmanager 9093`, then http://localhost:9093 | none |
+| Delivered alerts | `kubectl -n monitoring logs deploy/alert-receiver -f` (stands in for Slack/PagerDuty) | none |
 
 ### How a change is delivered
 
