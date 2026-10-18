@@ -56,6 +56,7 @@ curl localhost:8080/actuator/info                 # app.version = git commit SHA
 | Alertmanager | `kubectl -n monitoring port-forward svc/monitoring-kube-prometheus-alertmanager 9093`, then http://localhost:9093 | none |
 | Delivered alerts | `kubectl -n monitoring logs deploy/alert-receiver -f` (stands in for Slack/PagerDuty) | none |
 | Logs (Loki) | Grafana → Explore → **Loki**, e.g. `{app="car-rental-backend"}`. Open a line, then **View trace** to jump to Jaeger. | `admin` |
+| Logs Drilldown | http://localhost:3000/a/grafana-lokiexplore-app/explore (defaults to Loki; open it from this link or the menu, not an old URL with an empty `var-ds=`) | `admin` |
 
 ### How a change is delivered
 
@@ -71,6 +72,7 @@ More detail: [architecture](docs/architecture.md), [decisions and trade-offs](do
 - Single MySQL replica with no backups. Losing the PVC loses the data.
 - Argo CD tracks the `devops` (PR) branch until the PR is merged.
 - Jaeger keeps traces in memory, so they are lost when it restarts. Loki keeps logs for 72 h on a 2Gi volume, with a single replica.
+- The Logs Drilldown **Patterns** tab is turned off. Loki's pattern ingester returned no patterns at this app's low log volume.
 - Two Spring Framework CVEs are accepted in `.trivyignore`. They are fixed only in Spring 7, and the code paths they affect (XsltView, SSE) are not used here.
 - A GitHub runner cannot reach the laptop, which is why delivery is pull-based through Argo CD.
 

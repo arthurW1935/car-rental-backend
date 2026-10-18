@@ -27,7 +27,7 @@ helm upgrade --install monitoring prometheus-community/kube-prometheus-stack \
   --version "$KPS_CHART_VERSION" -n "$NS" -f observability/kube-prometheus-stack-values.yaml \
   --wait --timeout 10m
 
-kubectl apply -f observability/jaeger.yaml -f observability/alert-receiver.yaml
+kubectl apply -f observability/jaeger.yaml -f observability/alert-receiver.yaml -f observability/grafana-plugins.yaml
 kubectl -n "$NS" rollout status deploy/jaeger --timeout=3m
 kubectl -n "$NS" rollout status deploy/alert-receiver --timeout=3m
 

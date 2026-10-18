@@ -1,0 +1,23 @@
+# Provisioned settings for Grafana's Logs Drilldown app, loaded by the Grafana plugins
+# sidecar (label grafana_plugin). Without a default, the app falls back to Grafana's default
+# datasource (Prometheus), sends Loki queries to it, gets 404s and shows
+# "Log volume has not been configured".
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-plugin-settings
+  namespace: monitoring
+  labels:
+    grafana_plugin: "1"
+data:
+  logs-drilldown.yaml: |
+    apiVersion: 1
+    apps:
+      - type: grafana-lokiexplore-app
+        org_id: 1
+        disabled: false
+        jsonData:
+          dataSource: loki
+          # Loki's pattern ingester returned no patterns for this low-traffic app even with
+          # pattern_rate_threshold 0, so the tab is hidden rather than shown empty.
+          patternsDisabled: true

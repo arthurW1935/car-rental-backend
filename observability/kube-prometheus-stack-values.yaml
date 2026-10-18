@@ -106,6 +106,8 @@ grafana:
     dashboards:
       enabled: true
       searchNamespace: ALL   # load dashboards shipped by app charts
+    plugins:
+      enabled: true          # app-plugin settings from ConfigMaps (observability/grafana-plugins.yaml)
   # Logs <-> traces in both directions. "$$" escapes "$" in Grafana provisioning files.
   additionalDataSources:
     - name: Loki
