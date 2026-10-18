@@ -1,0 +1,54 @@
+# Default values for the car-rental chart.
+
+image:
+  repository: ghcr.io/arthurw1935/car-rental-backend
+  # Set to the git commit SHA by CI (see .github/workflows). Traceable: tag == commit.
+  tag: local
+  pullPolicy: IfNotPresent
+
+app:
+  replicas: 2
+  port: 8080
+  service:
+    type: NodePort
+    nodePort: 30080
+  resources:
+    requests: { cpu: 250m, memory: 384Mi }
+    limits: { memory: 768Mi }
+  # Extra non-secret env vars
+  env:
+    JAVA_TOOL_OPTIONS: "-XX:MaxRAMPercentage=75 -XX:+ExitOnOutOfMemoryError"
+
+# Name of a pre-created Secret holding DB passwords (keys: mysql-root-password, mysql-password).
+# Created outside git by scripts/bootstrap.sh, so no credentials live in the repo.
+existingSecret: car-rental-db
+
+mysql:
+  image: mysql:8.4
+  database: car_rental_db
+  user: carrental
+  storage: 2Gi
+  resources:
+    requests: { cpu: 100m, memory: 512Mi }
+    limits: { memory: 1Gi }
+
+podDisruptionBudget:
+  minAvailable: 1
+
+networkPolicy:
+  enabled: true
+  # Namespaces allowed to scrape /actuator/prometheus
+  monitoringNamespace: monitoring
+
+# Observability (needs kube-prometheus-stack CRDs, so off by default; on in deploy/values-kind.yaml)
+serviceMonitor:
+  enabled: false
+  interval: 15s
+prometheusRule:
+  enabled: false
+grafanaDashboard:
+  enabled: false
+
+tracing:
+  # OTLP/HTTP traces endpoint, e.g. http://jaeger.monitoring:4318/v1/traces. Empty = no export.
+  otlpEndpoint: ""

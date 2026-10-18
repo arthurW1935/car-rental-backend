@@ -1,0 +1,15 @@
+# Argo CD install values for the local kind cluster (chart argo/argo-cd).
+# Minimal footprint: no SSO (dex) or notifications needed for a single-user setup.
+dex:
+  enabled: false
+notifications:
+  enabled: false
+server:
+  service:
+    type: NodePort
+    nodePortHttp: 30081    # not mapped to the host; avoids the chart default 30080 (used by the app)
+    nodePortHttps: 30443   # -> https://localhost:8443 (kind port mapping)
+configs:
+  params:
+    # Poll git every 60s so new image tags are picked up quickly (no webhook into a laptop).
+    timeout.reconciliation: 60s

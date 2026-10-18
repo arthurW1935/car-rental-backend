@@ -1,0 +1,12 @@
+.git
+.github
+target
+logs
+helm
+argocd
+docs
+*.md
+*.png
+.env
+.idea
+.vscode

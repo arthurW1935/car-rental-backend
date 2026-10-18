@@ -1,0 +1,13 @@
+{{- if .Values.grafanaDashboard.enabled }}
+# Grafana's sidecar loads any ConfigMap labelled grafana_dashboard=1 (dashboard as code).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-dashboard
+  labels:
+    {{- include "car-rental.labels" . | nindent 4 }}
+    grafana_dashboard: "1"
+data:
+  car-rental.json: |-
+{{ .Files.Get "dashboards/car-rental.json" | indent 4 }}
+{{- end }}

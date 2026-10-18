@@ -1,0 +1,60 @@
+{{- if .Values.prometheusRule.enabled }}
+# SLO-based alerts. SLO: 99% of API requests succeed (non-5xx) and p95 latency < 500 ms.
+# Health-check endpoints are excluded so probes don't hide real user traffic.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ .Release.Name }}-slo
+  labels: {{- include "car-rental.labels" . | nindent 4 }}
+spec:
+  groups:
+    - name: car-rental.slo
+      rules:
+        - record: carrental:http_requests:rate5m
+          expr: sum(rate(http_server_requests_seconds_count{application="car-rental-backend",uri!~"/actuator.*"}[5m]))
+        - record: carrental:http_errors:rate5m
+          expr: sum(rate(http_server_requests_seconds_count{application="car-rental-backend",uri!~"/actuator.*",status=~"5.."}[5m])) or vector(0)
+        - record: carrental:http_latency_p95:5m
+          expr: histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{application="car-rental-backend",uri!~"/actuator.*"}[5m])))
+
+        - alert: CarRentalHighErrorRate
+          expr: (carrental:http_errors:rate5m / carrental:http_requests:rate5m) > 0.01
+          for: 5m
+          labels: { severity: critical, team: car-rental }
+          annotations:
+            summary: "More than 1% of API requests are failing (5xx)"
+            runbook: "Check Grafana error panel by URI, then Jaeger traces for a failing request; if it started with a deploy, git revert the deploy commit."
+        - alert: CarRentalHighLatency
+          expr: carrental:http_latency_p95:5m > 0.5
+          for: 10m
+          labels: { severity: warning, team: car-rental }
+          annotations:
+            summary: "p95 API latency above 500 ms"
+            runbook: "Open a slow trace in Jaeger: is time spent in MySQL (JDBC spans) or in the app? Check Hikari pool usage and pod CPU."
+        - alert: CarRentalNoReadyPods
+          expr: kube_deployment_status_replicas_available{namespace="{{ .Release.Namespace }}",deployment="{{ .Release.Name }}-app"} < 1
+          # 2m (> DatabaseDown's 1m) so a DB outage always raises the root-cause alert first;
+          # with equal timings both fired in the same evaluation and inhibition lost the race.
+          for: 2m
+          labels: { severity: critical, team: car-rental }
+          annotations:
+            summary: "No app pods are ready: the API is down for users"
+            runbook: "kubectl -n {{ .Release.Namespace }} describe pods; readiness fails when MySQL is unreachable, so check the MySQL pod first."
+        - alert: CarRentalDegraded
+          expr: kube_deployment_status_replicas_available{namespace="{{ .Release.Namespace }}",deployment="{{ .Release.Name }}-app"} < kube_deployment_spec_replicas{namespace="{{ .Release.Namespace }}",deployment="{{ .Release.Name }}-app"}
+          for: 5m
+          labels: { severity: warning, team: car-rental }
+          annotations:
+            summary: "Fewer app replicas available than desired (no redundancy)"
+            runbook: "Look for crash loops or a stuck rollout: kubectl -n {{ .Release.Namespace }} rollout status deploy/{{ .Release.Name }}-app"
+        - alert: CarRentalDatabaseDown
+          expr: kube_statefulset_status_replicas_ready{namespace="{{ .Release.Namespace }}",statefulset="{{ include "car-rental.mysql.host" . }}"} < 1
+          for: 1m
+          # Stay firing 2m after MySQL is back: app pods need ~1m more to be seen as ready,
+          # and this alert must keep inhibiting CarRentalNoReadyPods through that tail.
+          keep_firing_for: 2m
+          labels: { severity: critical, team: car-rental }
+          annotations:
+            summary: "MySQL is not ready"
+            runbook: "kubectl -n {{ .Release.Namespace }} logs {{ include "car-rental.mysql.host" . }}-0; check the PVC is bound and the pod is not OOMKilled."
+{{- end }}

@@ -1,0 +1,13 @@
+# Environment overrides for the local kind cluster (used by Argo CD).
+# image.tag is updated by CI after an approved deploy: this file is the record of what runs.
+image:
+  tag: 122220223d8a3fd00cb8de61f66e2d5469ae5785
+
+serviceMonitor:
+  enabled: true
+prometheusRule:
+  enabled: true
+grafanaDashboard:
+  enabled: true
+tracing:
+  otlpEndpoint: http://jaeger.monitoring:4318/v1/traces

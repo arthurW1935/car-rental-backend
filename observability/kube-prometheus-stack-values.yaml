@@ -1,0 +1,137 @@
+# kube-prometheus-stack for the local kind cluster: Prometheus, Alertmanager, Grafana,
+# kube-state-metrics, node-exporter.
+
+# kind does not expose these control-plane components to scraping; disabling avoids
+# permanently-firing "target down" alerts that would train us to ignore alerts.
+kubeEtcd: { enabled: false }
+kubeControllerManager: { enabled: false }
+kubeScheduler: { enabled: false }
+kubeProxy: { enabled: false }
+
+# kind nodes share the Docker VM's clock, which never reports "synchronised" via timex,
+# so these fire permanently on a laptop. Real nodes run NTP and should keep them.
+defaultRules:
+  disabled:
+    NodeClockNotSynchronising: true
+    NodeClockSkewDetected: true
+
+prometheus:
+  prometheusSpec:
+    # Pick up ServiceMonitors/PrometheusRules from any namespace (our app ships its own).
+    serviceMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+    retention: 3d
+    resources:
+      requests: { cpu: 100m, memory: 400Mi }
+      limits: { memory: 1Gi }
+
+alertmanager:
+  # Routing: app alerts (label team=car-rental, set on our PrometheusRule) go to their own channel, split by
+  # severity; everything else (cluster alerts) goes to a platform channel.
+  # All receivers are webhooks to the in-cluster alert-receiver (observability/alert-receiver.yaml);
+  # on a real team these would be PagerDuty (critical) and Slack (warning).
+  config:
+    global:
+      resolve_timeout: 5m
+    route:
+      receiver: platform
+      group_by: [alertname, namespace]
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 12h
+      routes:
+        # Watchdog always fires to prove the pipeline works; in production it goes to a
+        # dead-man's-switch service. Locally we drop it.
+        - receiver: "null"
+          matchers: ['alertname = "Watchdog"']
+        - receiver: "null"
+          matchers: ['alertname = "InfoInhibitor"']
+        - receiver: car-rental-critical
+          matchers: ['team = "car-rental"', 'severity = "critical"']
+          group_by: [alertname]
+          group_wait: 10s      # users are affected: notify fast
+          group_interval: 1m   # send updates (incl. "resolved") quickly
+          repeat_interval: 1h  # and keep reminding until fixed
+        - receiver: car-rental-warning
+          matchers: ['team = "car-rental"']
+          group_by: [alertname]
+          repeat_interval: 4h
+    inhibit_rules:
+      # Root cause beats symptoms: if MySQL is down, don't also page for the app effects.
+      - source_matchers: ['alertname = "CarRentalDatabaseDown"']
+        target_matchers: ['alertname =~ "CarRentalNoReadyPods|CarRentalDegraded|CarRentalHighErrorRate|CarRentalHighLatency"']
+        equal: [team]
+      # If no pod is ready, "degraded"/latency/error alerts add nothing.
+      - source_matchers: ['alertname = "CarRentalNoReadyPods"']
+        target_matchers: ['alertname =~ "CarRentalDegraded|CarRentalHighErrorRate|CarRentalHighLatency"']
+        equal: [team]
+      # Chart defaults: a critical alert mutes the warning/info version of the same alert.
+      - source_matchers: ['severity = "critical"']
+        target_matchers: ['severity =~ "warning|info"']
+        equal: [namespace, alertname]
+      - source_matchers: ['severity = "warning"']
+        target_matchers: ['severity = "info"']
+        equal: [namespace, alertname]
+      - source_matchers: ['alertname = "InfoInhibitor"']
+        target_matchers: ['severity = "info"']
+        equal: [namespace]
+    receivers:
+      - name: "null"
+      - name: car-rental-critical
+        webhook_configs:
+          - url: http://alert-receiver.monitoring:8080/car-rental-critical
+            send_resolved: true
+      - name: car-rental-warning
+        webhook_configs:
+          - url: http://alert-receiver.monitoring:8080/car-rental-warning
+            send_resolved: true
+      - name: platform
+        webhook_configs:
+          - url: http://alert-receiver.monitoring:8080/platform
+            send_resolved: true
+  alertmanagerSpec:
+    resources:
+      requests: { cpu: 10m, memory: 32Mi }
+      limits: { memory: 128Mi }
+
+grafana:
+  admin:
+    existingSecret: grafana-admin   # created by scripts/install-observability.sh, not in git
+    userKey: admin-user
+    passwordKey: admin-password
+  service:
+    type: NodePort
+    nodePort: 30300   # -> http://localhost:3000
+  sidecar:
+    dashboards:
+      enabled: true
+      searchNamespace: ALL   # load dashboards shipped by app charts
+    plugins:
+      enabled: true          # app-plugin settings from ConfigMaps (observability/grafana-plugins.yaml)
+  # Logs <-> traces in both directions. "$$" escapes "$" in Grafana provisioning files.
+  additionalDataSources:
+    - name: Loki
+      type: loki
+      uid: loki
+      url: http://loki.monitoring:3100
+      jsonData:
+        derivedFields:
+          # Every app log line carries trace_id (structured metadata) -> "View trace" button
+          - name: TraceID
+            matcherType: label
+            matcherRegex: trace_id
+            datasourceUid: jaeger
+            url: "$${__value.raw}"
+            urlDisplayLabel: View trace
+    - name: Jaeger
+      type: jaeger
+      uid: jaeger
+      url: http://jaeger.monitoring:16686
+      jsonData:
+        # From a span -> "Logs for this span": the app log lines with the same trace id
+        tracesToLogsV2:
+          datasourceUid: loki
+          spanStartTimeShift: "-5m"
+          spanEndTimeShift: "5m"
+          customQuery: true
+          query: '{app="car-rental-backend"} | trace_id="$${__trace.traceId}"'
